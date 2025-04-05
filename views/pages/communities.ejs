@@ -2,43 +2,177 @@
 <header class="sticky top-0 bg-black bg-opacity-80 backdrop-blur-md z-10 p-4 border-b border-gray-800">
     <div class="flex justify-between items-center">
         <h1 class="text-xl font-bold">Communities</h1>
-        <i class="fa-solid fa-gear"></i>
+        <div class="flex gap-2">
+            <a href="/communities/create" class="p-2 rounded-full hover:bg-gray-800">
+                <i class="fa-solid fa-plus"></i>
+            </a>
+            <button class="p-2 rounded-full hover:bg-gray-800">
+                <i class="fa-solid fa-gear"></i>
+            </button>
+        </div>
     </div>
 </header>
 
-<!-- Communities with static data -->
 <div class="pb-16">
-    <!-- Static community list -->
-    <div class="p-4 border-b border-gray-800 hover:bg-gray-900 transition-colors">
-        <div class="flex">
-            <img src="https://pbs.twimg.com/profile_images/1683325380441128960/yRsRRjGO_400x400.jpg" alt="Community" class="w-12 h-12 rounded-full mr-3">
-            <div class="flex-1">
-                <h3 class="font-bold">Web Developers</h3>
-                <p class="text-gray-500">245K members</p>
-                <p class="mt-1">A community for web developers to share knowledge and resources</p>
-            </div>
+    <!-- Search Communities -->
+    <div class="p-4 border-b border-gray-800">
+        <div class="relative">
+            <form action="/search" method="GET">
+                <input type="hidden" name="type" value="communities">
+                <input type="text" name="q" placeholder="Search Communities" class="w-full bg-gray-800 rounded-full py-2 pl-10 pr-4 focus:outline-none">
+                <i class="fa-solid fa-search absolute left-3 top-3 text-gray-500"></i>
+                <button type="submit" class="hidden">Search</button>
+            </form>
         </div>
     </div>
-    
-    <div class="p-4 border-b border-gray-800 hover:bg-gray-900 transition-colors">
-        <div class="flex">
-            <img src="https://pbs.twimg.com/profile_images/1683325380441128960/yRsRRjGO_400x400.jpg" alt="Community" class="w-12 h-12 rounded-full mr-3">
-            <div class="flex-1">
-                <h3 class="font-bold">Design Enthusiasts</h3>
-                <p class="text-gray-500">120K members</p>
-                <p class="mt-1">Sharing design inspiration, tools, and tips</p>
+
+    <!-- Your Communities -->
+    <% if (req.isAuthenticated && req.isAuthenticated() && userCommunities && userCommunities.length > 0) { %>
+        <div class="p-4 border-b border-gray-800">
+            <h2 class="text-xl font-bold mb-4">Your communities</h2>
+
+            <div class="space-y-4">
+                <% userCommunities.forEach(community => { %>
+                    <a href="/communities/<%= community.slug %>" class="flex items-center hover:bg-gray-900 p-2 rounded-lg transition-colors">
+                        <img src="<%= community.profileImage %>" alt="<%= community.name %>" class="w-12 h-12 rounded-full mr-3 object-cover">
+                        <div>
+                            <h3 class="font-bold"><%= community.name %></h3>
+                            <p class="text-gray-500 text-sm"><%= community.members.length %> members</p>
+                        </div>
+                    </a>
+                <% }); %>
             </div>
+
+            <a href="/communities/discover" class="text-blue-500 block mt-4 hover:underline">See more</a>
         </div>
-    </div>
-    
-    <div class="p-4 border-b border-gray-800 hover:bg-gray-900 transition-colors">
-        <div class="flex">
-            <img src="https://pbs.twimg.com/profile_images/1683325380441128960/yRsRRjGO_400x400.jpg" alt="Community" class="w-12 h-12 rounded-full mr-3">
-            <div class="flex-1">
-                <h3 class="font-bold">Startup Founders</h3>
-                <p class="text-gray-500">92.1K members</p>
-                <p class="mt-1">A community for entrepreneurs to share experiences, advice, and resources</p>
+    <% } %>
+
+    <!-- Trending Communities -->
+    <div class="p-4 border-b border-gray-800">
+        <h2 class="text-xl font-bold mb-4">Trending communities</h2>
+
+        <% if (trendingCommunities && trendingCommunities.length > 0) { %>
+            <div class="space-y-4">
+                <% trendingCommunities.forEach(community => { %>
+                    <a href="/communities/<%= community.slug %>" class="flex items-center hover:bg-gray-900 p-2 rounded-lg transition-colors">
+                        <img src="<%= community.profileImage %>" alt="<%= community.name %>" class="w-12 h-12 rounded-full mr-3 object-cover">
+                        <div class="flex-1">
+                            <h3 class="font-bold"><%= community.name %></h3>
+                            <p class="text-gray-500 text-sm"><%= community.members.length %> members</p>
+                        </div>
+
+                        <% if (req.isAuthenticated && req.isAuthenticated()) { %>
+                            <% if (community.members.includes(req.user._id)) { %>
+                                <span class="text-gray-500 text-sm">Joined</span>
+                            <% } else if (community.pendingMembers && community.pendingMembers.includes(req.user._id)) { %>
+                                <span class="text-gray-500 text-sm">Pending</span>
+                            <% } else { %>
+                                <form action="/communities/<%= community.slug %>/join" method="POST" class="inline">
+                                    <button type="submit" class="bg-white text-black rounded-full px-4 py-1 text-sm font-bold">
+                                        Join
+                                    </button>
+                                </form>
+                            <% } %>
+                        <% } else { %>
+                            <a href="/login" class="bg-white text-black rounded-full px-4 py-1 text-sm font-bold">
+                                Join
+                            </a>
+                        <% } %>
+                    </a>
+                <% }); %>
             </div>
-        </div>
+        <% } else { %>
+            <div class="text-gray-500 text-center py-4">
+                No trending communities at the moment
+            </div>
+        <% } %>
     </div>
-</div> 
+
+    <!-- Recommended Communities -->
+    <div class="p-4">
+        <h2 class="text-xl font-bold mb-4">Recommended for you</h2>
+
+        <% if (recommendedCommunities && recommendedCommunities.length > 0) { %>
+            <div class="space-y-4">
+                <% recommendedCommunities.forEach(community => { %>
+                    <a href="/communities/<%= community.slug %>" class="flex items-center hover:bg-gray-900 p-2 rounded-lg transition-colors">
+                        <img src="<%= community.profileImage %>" alt="<%= community.name %>" class="w-12 h-12 rounded-full mr-3 object-cover">
+                        <div class="flex-1">
+                            <h3 class="font-bold"><%= community.name %></h3>
+                            <p class="text-gray-500 text-sm"><%= community.members.length %> members</p>
+                        </div>
+
+                        <% if (req.isAuthenticated && req.isAuthenticated()) { %>
+                            <% if (community.members.includes(req.user._id)) { %>
+                                <span class="text-gray-500 text-sm">Joined</span>
+                            <% } else if (community.pendingMembers && community.pendingMembers.includes(req.user._id)) { %>
+                                <span class="text-gray-500 text-sm">Pending</span>
+                            <% } else { %>
+                                <form action="/communities/<%= community.slug %>/join" method="POST" class="inline">
+                                    <button type="submit" class="bg-white text-black rounded-full px-4 py-1 text-sm font-bold">
+                                        Join
+                                    </button>
+                                </form>
+                            <% } %>
+                        <% } else { %>
+                            <a href="/login" class="bg-white text-black rounded-full px-4 py-1 text-sm font-bold">
+                                Join
+                            </a>
+                        <% } %>
+                    </a>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <div class="text-gray-500 text-center py-4">
+                No recommended communities at the moment
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<script>
+    // Handle join community with AJAX
+    document.addEventListener('DOMContentLoaded', function() {
+        const joinForms = document.querySelectorAll('form[action*="/join"]');
+
+        joinForms.forEach(form => {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const button = form.querySelector('button');
+                const originalText = button.textContent.trim();
+                button.textContent = 'Joining...';
+                button.disabled = true;
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (data.isPending) {
+                        // Replace button with "Pending" text
+                        const span = document.createElement('span');
+                        span.className = 'text-gray-500 text-sm';
+                        span.textContent = 'Pending';
+                        form.parentNode.replaceChild(span, form);
+                    } else if (data.isMember) {
+                        // Replace button with "Joined" text
+                        const span = document.createElement('span');
+                        span.className = 'text-gray-500 text-sm';
+                        span.textContent = 'Joined';
+                        form.parentNode.replaceChild(span, form);
+                    }
+                } catch (error) {
+                    console.error('Error joining community:', error);
+                    button.textContent = originalText;
+                    button.disabled = false;
+                }
+            });
+        });
+    });
+</script>

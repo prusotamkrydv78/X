@@ -1,0 +1,644 @@
+<!-- Header -->
+<header class="sticky top-0 bg-black bg-opacity-80 backdrop-blur-md z-10 p-4 border-b border-gray-800">
+    <div class="flex items-center">
+        <a href="/communities" class="mr-4 p-2 rounded-full hover:bg-gray-800">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <h1 class="text-xl font-bold"><%= community.name %></h1>
+    </div>
+</header>
+
+<!-- Community Header -->
+<div class="relative">
+    <!-- Cover Image -->
+    <div class="h-48 bg-gray-800 overflow-hidden">
+        <img src="<%= community.coverImage %>" alt="Cover" class="w-full h-full object-cover">
+    </div>
+
+    <!-- Community Info -->
+    <div class="p-4 border-b border-gray-800 relative">
+        <!-- Profile Image -->
+        <div class="absolute -top-12 left-4 border-4 border-black rounded-full">
+            <img src="<%= community.profileImage %>" alt="<%= community.name %>" class="w-24 h-24 rounded-full object-cover">
+        </div>
+
+        <!-- Community Details -->
+        <div class="mt-16">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h1 class="text-2xl font-bold"><%= community.name %></h1>
+                    <p class="text-gray-500"><%= community.members.length %> members</p>
+                </div>
+
+                <div>
+                    <% if (isCreator || isModerator) { %>
+                        <a href="/communities/<%= community.slug %>/manage" class="bg-transparent border border-gray-600 text-white rounded-full px-4 py-2 font-bold hover:bg-gray-800">
+                            Manage
+                        </a>
+                    <% } else if (isMember) { %>
+                        <form action="/communities/<%= community.slug %>/leave" method="POST">
+                            <button type="submit" class="bg-transparent border border-gray-600 text-white rounded-full px-4 py-2 font-bold hover:bg-gray-800">
+                                Leave
+                            </button>
+                        </form>
+                    <% } else if (isPending) { %>
+                        <span class="bg-transparent border border-gray-600 text-gray-400 rounded-full px-4 py-2 font-bold">
+                            Pending
+                        </span>
+                    <% } else if (req.isAuthenticated && req.isAuthenticated()) { %>
+                        <form action="/communities/<%= community.slug %>/join" method="POST">
+                            <button type="submit" class="bg-white text-black rounded-full px-4 py-2 font-bold hover:bg-gray-200">
+                                Join
+                            </button>
+                        </form>
+                    <% } else { %>
+                        <a href="/login" class="bg-white text-black rounded-full px-4 py-2 font-bold hover:bg-gray-200">
+                            Join
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+
+            <p class="mt-3"><%= community.description %></p>
+
+            <div class="flex items-center mt-3 text-gray-500">
+                <div class="flex items-center mr-4">
+                    <i class="fa-solid fa-user mr-1"></i>
+                    <span>Created by <a href="/users/<%= community.creator.username %>" class="hover:underline"><%= community.creator.name %></a></span>
+                </div>
+
+                <% if (community.isPrivate) { %>
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-lock mr-1"></i>
+                        <span>Private community</span>
+                    </div>
+                <% } else { %>
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-globe mr-1"></i>
+                        <span>Public community</span>
+                    </div>
+                <% } %>
+            </div>
+
+            <% if (community.topics && community.topics.length > 0) { %>
+                <div class="flex flex-wrap gap-2 mt-3">
+                    <% community.topics.forEach(topic => { %>
+                        <span class="bg-gray-800 text-gray-300 px-2 py-1 rounded-full text-sm">
+                            <%= topic %>
+                        </span>
+                    <% }); %>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Community Tabs -->
+    <div class="border-b border-gray-800 flex">
+        <a href="/communities/<%= community.slug %>" class="flex-1 text-center py-4 <%= !req.query.tab || req.query.tab === 'posts' ? 'border-b-4 border-blue-500 font-bold' : 'text-gray-500 hover:bg-gray-900 transition-colors' %>">Posts</a>
+        <a href="/communities/<%= community.slug %>?tab=about" class="flex-1 text-center py-4 <%= req.query.tab === 'about' ? 'border-b-4 border-blue-500 font-bold' : 'text-gray-500 hover:bg-gray-900 transition-colors' %>">About</a>
+        <a href="/communities/<%= community.slug %>?tab=members" class="flex-1 text-center py-4 <%= req.query.tab === 'members' ? 'border-b-4 border-blue-500 font-bold' : 'text-gray-500 hover:bg-gray-900 transition-colors' %>">Members</a>
+        <% if (isMember || isModerator || isCreator) { %>
+            <a href="/communities/<%= community.slug %>?tab=invite" class="flex-1 text-center py-4 <%= req.query.tab === 'invite' ? 'border-b-4 border-blue-500 font-bold' : 'text-gray-500 hover:bg-gray-900 transition-colors' %>">Invite</a>
+        <% } %>
+    </div>
+</div>
+
+<!-- Community Content -->
+<div class="pb-16">
+    <% if (!req.query.tab || req.query.tab === 'posts') { %>
+        <% if (isMember) { %>
+            <!-- Post Composer -->
+            <div class="border-b border-gray-800 p-4">
+                <form action="/communities/<%= community.slug %>/post" method="POST" enctype="multipart/form-data">
+                    <div class="flex">
+                        <img src="<%= req.user.profileImage %>" alt="Profile" class="w-12 h-12 rounded-full mr-3 object-cover">
+                        <div class="flex-1">
+                            <div class="border-b border-gray-800 pb-3">
+                                <textarea name="content" placeholder="Post to <%= community.name %>" class="w-full bg-transparent text-xl outline-none resize-none h-24 placeholder-gray-500" required></textarea>
+                            </div>
+
+                            <div class="flex justify-between items-center pt-3">
+                                <div class="flex text-blue-500 gap-2">
+                                    <label class="p-2 rounded-full hover:bg-blue-500/10 cursor-pointer">
+                                        <i class="fa-regular fa-image"></i>
+                                        <input type="file" name="media" multiple class="hidden" accept="image/*">
+                                    </label>
+                                    <button type="button" class="p-2 rounded-full hover:bg-blue-500/10"><i class="fa-solid fa-gift"></i></button>
+                                    <button type="button" class="p-2 rounded-full hover:bg-blue-500/10"><i class="fa-regular fa-face-smile"></i></button>
+                                </div>
+                                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-4 py-2 font-bold transition-colors">
+                                    Post
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        <% } %>
+
+        <!-- Community Posts -->
+        <% if (posts && posts.length > 0) { %>
+            <% posts.forEach(post => { %>
+                <div class="p-4 border-b border-gray-800 hover:bg-gray-900/30 transition-colors">
+                    <div class="flex">
+                        <a href="/users/<%= post.user.username %>" class="flex-shrink-0">
+                            <img src="<%= post.user.profileImage %>" alt="<%= post.user.name %>" class="w-12 h-12 rounded-full mr-3 object-cover">
+                        </a>
+                        <div class="flex-1">
+                            <div class="flex items-center flex-wrap">
+                                <a href="/users/<%= post.user.username %>" class="font-bold hover:underline mr-1"><%= post.user.name %></a>
+                                <% if (post.user.isVerified) { %>
+                                    <i class="fa-solid fa-circle-check text-blue-500 text-sm mr-1"></i>
+                                <% } %>
+                                <span class="text-gray-500 text-sm">@<%= post.user.username %> · <%= timeAgo(post.createdAt) %></span>
+
+                                <% if (post.isRetweet && post.retweetedBy) { %>
+                                    <div class="w-full text-gray-500 text-sm mt-1">
+                                        <i class="fa-solid fa-retweet mr-1"></i>
+                                        Reposted by <%= post.retweetedBy.name %>
+                                    </div>
+                                <% } %>
+
+                                <div class="ml-auto">
+                                    <button class="text-gray-500 hover:text-blue-500 p-1 hover:bg-blue-500/10 rounded-full">
+                                        <i class="fa-solid fa-ellipsis"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <a href="/tweets/<%= post._id %>" class="block">
+                                <p class="mt-2 mb-3"><%= post.content %></p>
+
+                                <% if (post.media && post.media.length > 0) { %>
+                                    <div class="mb-3 rounded-xl overflow-hidden <%= post.media.length > 1 ? 'grid grid-cols-2 gap-1' : '' %>">
+                                        <% post.media.forEach(mediaUrl => { %>
+                                            <img src="<%= mediaUrl %>" alt="Post media" class="w-full object-cover max-h-96">
+                                        <% }); %>
+                                    </div>
+                                <% } %>
+                            </a>
+
+                            <!-- Post actions -->
+                            <div class="flex justify-between text-gray-500 mt-3">
+                                <a href="/tweets/<%= post._id %>" class="tweet-action reply flex items-center hover:text-blue-500">
+                                    <i class="fa-regular fa-comment mr-2"></i>
+                                    <span><%= post.replies ? post.replies.length : 0 %></span>
+                                </a>
+
+                                <form action="/tweets/<%= post._id %>/retweet" method="POST" class="inline">
+                                    <button type="submit" class="tweet-action retweet flex items-center hover:text-green-500 <%= post.retweets.includes(req.user?._id) ? 'text-green-500' : '' %>">
+                                        <i class="fa-solid fa-retweet mr-2"></i>
+                                        <span><%= post.retweets.length %></span>
+                                    </button>
+                                </form>
+
+                                <form action="/tweets/<%= post._id %>/like" method="POST" class="inline">
+                                    <button type="submit" class="tweet-action like flex items-center hover:text-red-500 <%= post.likes.includes(req.user?._id) ? 'text-red-500' : '' %>">
+                                        <i class="<%= post.likes.includes(req.user?._id) ? 'fa-solid' : 'fa-regular' %> fa-heart mr-2"></i>
+                                        <span><%= post.likes.length %></span>
+                                    </button>
+                                </form>
+
+                                <button class="tweet-action share flex items-center hover:text-blue-500">
+                                    <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <div class="flex flex-col items-center justify-center py-16 text-center">
+                <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mb-4">
+                    <i class="fa-solid fa-comments text-2xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-2">No posts yet</h2>
+                <p class="text-gray-500 mb-6 max-w-md">Be the first to post in this community!</p>
+
+                <% if (isMember) { %>
+                    <button id="create-post-btn" class="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-4 py-2 font-bold">
+                        Create a post
+                    </button>
+                <% } else if (req.isAuthenticated && req.isAuthenticated()) { %>
+                    <form action="/communities/<%= community.slug %>/join" method="POST">
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-4 py-2 font-bold">
+                            Join to post
+                        </button>
+                    </form>
+                <% } else { %>
+                    <a href="/login" class="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-4 py-2 font-bold">
+                        Log in to post
+                    </a>
+                <% } %>
+            </div>
+        <% } %>
+    <% } else if (req.query.tab === 'about') { %>
+        <!-- About Tab -->
+        <div class="p-4">
+            <h2 class="text-xl font-bold mb-4">About <%= community.name %></h2>
+
+            <div class="bg-gray-900 rounded-xl p-6 mb-6">
+                <h3 class="text-lg font-bold mb-2">Description</h3>
+                <p class="text-gray-300"><%= community.description %></p>
+
+                <div class="mt-4">
+                    <h3 class="text-lg font-bold mb-2">Created</h3>
+                    <p class="text-gray-300"><%= new Date(community.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+                </div>
+
+                <div class="mt-4">
+                    <h3 class="text-lg font-bold mb-2">Creator</h3>
+                    <a href="/users/<%= community.creator.username %>" class="flex items-center hover:bg-gray-800 p-2 rounded-lg transition-colors">
+                        <img src="<%= community.creator.profileImage %>" alt="<%= community.creator.name %>" class="w-10 h-10 rounded-full mr-3 object-cover">
+                        <div>
+                            <p class="font-bold"><%= community.creator.name %></p>
+                            <p class="text-gray-500">@<%= community.creator.username %></p>
+                        </div>
+                    </a>
+                </div>
+
+                <% if (community.topics && community.topics.length > 0) { %>
+                    <div class="mt-4">
+                        <h3 class="text-lg font-bold mb-2">Topics</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <% community.topics.forEach(topic => { %>
+                                <span class="bg-gray-800 text-gray-300 px-3 py-1 rounded-full text-sm">
+                                    <%= topic %>
+                                </span>
+                            <% }); %>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+
+            <% if (community.rules && community.rules.length > 0) { %>
+                <div class="bg-gray-900 rounded-xl p-6">
+                    <h3 class="text-xl font-bold mb-4">Community Rules</h3>
+
+                    <div class="space-y-4">
+                        <% community.rules.forEach((rule, index) => { %>
+                            <div>
+                                <h4 class="font-bold"><%= index + 1 %>. <%= rule.title %></h4>
+                                <p class="text-gray-300"><%= rule.description %></p>
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    <% } else if (req.query.tab === 'members') { %>
+        <!-- Members Tab -->
+        <div class="p-4">
+            <h2 class="text-xl font-bold mb-4">Members (<%= community.members.length %>)</h2>
+
+            <div class="bg-gray-900 rounded-xl p-4 mb-6">
+                <h3 class="text-lg font-bold mb-4">Moderators</h3>
+
+                <div class="space-y-3">
+                    <% community.moderators.forEach(mod => { %>
+                        <a href="/users/<%= mod.username %>" class="flex items-center hover:bg-gray-800 p-2 rounded-lg transition-colors">
+                            <img src="<%= mod.profileImage %>" alt="<%= mod.name %>" class="w-10 h-10 rounded-full mr-3 object-cover">
+                            <div class="flex-1">
+                                <div class="flex items-center">
+                                    <p class="font-bold"><%= mod.name %></p>
+                                    <% if (mod.isVerified) { %>
+                                        <i class="fa-solid fa-circle-check text-blue-500 text-sm ml-1"></i>
+                                    <% } %>
+                                </div>
+                                <p class="text-gray-500">@<%= mod.username %></p>
+                            </div>
+
+                            <span class="text-blue-500 text-sm">Moderator</span>
+                        </a>
+                    <% }); %>
+                </div>
+            </div>
+
+            <div class="bg-gray-900 rounded-xl p-4">
+                <h3 class="text-lg font-bold mb-4">All Members</h3>
+
+                <div class="space-y-3">
+                    <% community.members.forEach(member => { %>
+                        <a href="/users/<%= member.username %>" class="flex items-center hover:bg-gray-800 p-2 rounded-lg transition-colors">
+                            <img src="<%= member.profileImage %>" alt="<%= member.name %>" class="w-10 h-10 rounded-full mr-3 object-cover">
+                            <div class="flex-1">
+                                <div class="flex items-center">
+                                    <p class="font-bold"><%= member.name %></p>
+                                    <% if (member.isVerified) { %>
+                                        <i class="fa-solid fa-circle-check text-blue-500 text-sm ml-1"></i>
+                                    <% } %>
+                                </div>
+                                <p class="text-gray-500">@<%= member.username %></p>
+                            </div>
+
+                            <% if (member._id.equals(community.creator._id)) { %>
+                                <span class="text-blue-500 text-sm">Creator</span>
+                            <% } else if (community.moderators.some(mod => mod._id.equals(member._id))) { %>
+                                <span class="text-blue-500 text-sm">Moderator</span>
+                            <% } %>
+                        </a>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+    <% } else if (req.query.tab === 'invite' && (isMember || isModerator || isCreator)) { %>
+        <!-- Invite Tab -->
+        <div class="p-4">
+            <h2 class="text-xl font-bold mb-4">Invite People to <%= community.name %></h2>
+
+            <div class="bg-gray-900 rounded-xl p-6 mb-6">
+                <div class="relative mb-4">
+                    <input type="text" id="invite-search" placeholder="Search people to invite" class="w-full bg-gray-800 rounded-full py-2 pl-10 pr-4 focus:outline-none">
+                    <i class="fa-solid fa-search absolute left-3 top-3 text-gray-500"></i>
+                </div>
+
+                <div id="invite-search-results" class="max-h-64 overflow-y-auto mb-4"></div>
+
+                <div class="border-t border-gray-800 pt-4">
+                    <h3 class="font-bold mb-2">Invite from your followers</h3>
+
+                    <div id="followers-list" class="max-h-64 overflow-y-auto">
+                        <div class="flex justify-center p-4">
+                            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="selected-users" class="bg-gray-900 rounded-xl p-6 hidden">
+                <h3 class="font-bold mb-4">Selected Users</h3>
+                <div id="selected-users-list" class="space-y-2 mb-4"></div>
+
+                <button id="send-invites" class="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-4 py-2 font-bold w-full">
+                    Send Invites
+                </button>
+            </div>
+        </div>
+    <% } %>
+</div>
+
+<script>
+    // Scroll to post composer when "Create a post" button is clicked
+    const createPostBtn = document.getElementById('create-post-btn');
+    if (createPostBtn) {
+        createPostBtn.addEventListener('click', function() {
+            const postComposer = document.querySelector('textarea[name="content"]');
+            if (postComposer) {
+                postComposer.scrollIntoView({ behavior: 'smooth' });
+                postComposer.focus();
+            }
+        });
+    }
+
+    // Socket.io for real-time community updates
+    if (typeof io !== 'undefined') {
+        const socket = io();
+
+        // Join community room
+        socket.emit('joinCommunity', '<%= community._id %>');
+
+        // Listen for new community posts
+        socket.on('newCommunityPost', function(data) {
+            // Refresh the page to show the new post
+            // In a more advanced implementation, you could fetch just the new post and add it to the DOM
+            window.location.reload();
+        });
+    }
+
+    // Invite functionality
+    <% if (req.query.tab === 'invite' && (isMember || isModerator || isCreator)) { %>
+        const inviteSearch = document.getElementById('invite-search');
+        const inviteSearchResults = document.getElementById('invite-search-results');
+        const followersList = document.getElementById('followers-list');
+        const selectedUsers = document.getElementById('selected-users');
+        const selectedUsersList = document.getElementById('selected-users-list');
+        const sendInvitesBtn = document.getElementById('send-invites');
+
+        // Store selected users
+        const selectedUserIds = new Set();
+
+        // Load followers
+        async function loadFollowers() {
+            try {
+                const response = await fetch('/api/users/<%= req.user.username %>/followers');
+                const followers = await response.json();
+
+                if (followers.length === 0) {
+                    followersList.innerHTML = '<p class="text-gray-500 text-center p-4">You don\'t have any followers yet</p>';
+                    return;
+                }
+
+                followersList.innerHTML = followers.map(user => `
+                    <div class="flex items-center p-2 hover:bg-gray-800 rounded-lg">
+                        <img src="${user.profileImage}" alt="${user.name}" class="w-10 h-10 rounded-full mr-3 object-cover">
+                        <div class="flex-1">
+                            <p class="font-bold">${user.name}</p>
+                            <p class="text-gray-500">@${user.username}</p>
+                        </div>
+                        <button class="select-user-btn bg-blue-500 hover:bg-blue-600 text-white rounded-full px-3 py-1 text-sm" data-user-id="${user._id}" data-username="${user.username}" data-name="${user.name}" data-image="${user.profileImage}">
+                            Select
+                        </button>
+                    </div>
+                `).join('');
+
+                // Add event listeners to select buttons
+                document.querySelectorAll('.select-user-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const userId = this.dataset.userId;
+                        const username = this.dataset.username;
+                        const name = this.dataset.name;
+                        const image = this.dataset.image;
+
+                        if (selectedUserIds.has(userId)) {
+                            // Already selected, do nothing
+                            return;
+                        }
+
+                        // Add to selected users
+                        selectedUserIds.add(userId);
+                        addSelectedUser(userId, username, name, image);
+
+                        // Update button
+                        this.textContent = 'Selected';
+                        this.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                        this.classList.add('bg-gray-600');
+                        this.disabled = true;
+                    });
+                });
+            } catch (error) {
+                console.error('Error loading followers:', error);
+                followersList.innerHTML = '<p class="text-red-500 text-center p-4">Error loading followers</p>';
+            }
+        }
+
+        // Add user to selected list
+        function addSelectedUser(userId, username, name, image) {
+            // Show selected users section
+            selectedUsers.classList.remove('hidden');
+
+            // Add user to list
+            const userElement = document.createElement('div');
+            userElement.className = 'flex items-center p-2 bg-gray-800 rounded-lg';
+            userElement.dataset.userId = userId;
+            userElement.innerHTML = `
+                <img src="${image}" alt="${name}" class="w-8 h-8 rounded-full mr-2 object-cover">
+                <div class="flex-1">
+                    <p class="font-bold">${name}</p>
+                    <p class="text-gray-500 text-sm">@${username}</p>
+                </div>
+                <button class="remove-user-btn text-gray-400 hover:text-red-500">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            `;
+
+            // Add remove button functionality
+            userElement.querySelector('.remove-user-btn').addEventListener('click', function() {
+                selectedUserIds.delete(userId);
+                userElement.remove();
+
+                // Update any select buttons
+                const selectBtn = document.querySelector(`.select-user-btn[data-user-id="${userId}"]`);
+                if (selectBtn) {
+                    selectBtn.textContent = 'Select';
+                    selectBtn.classList.add('bg-blue-500', 'hover:bg-blue-600');
+                    selectBtn.classList.remove('bg-gray-600');
+                    selectBtn.disabled = false;
+                }
+
+                // Hide selected users section if empty
+                if (selectedUserIds.size === 0) {
+                    selectedUsers.classList.add('hidden');
+                }
+            });
+
+            selectedUsersList.appendChild(userElement);
+        }
+
+        // Search for users
+        inviteSearch.addEventListener('input', debounce(async () => {
+            const query = inviteSearch.value.trim();
+
+            if (query.length < 2) {
+                inviteSearchResults.innerHTML = '';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/users/search?q=${encodeURIComponent(query)}`);
+                const users = await response.json();
+
+                if (users.length === 0) {
+                    inviteSearchResults.innerHTML = '<p class="text-gray-500 text-center p-4">No users found</p>';
+                    return;
+                }
+
+                inviteSearchResults.innerHTML = users.map(user => `
+                    <div class="flex items-center p-2 hover:bg-gray-800 rounded-lg">
+                        <img src="${user.profileImage}" alt="${user.name}" class="w-10 h-10 rounded-full mr-3 object-cover">
+                        <div class="flex-1">
+                            <p class="font-bold">${user.name}</p>
+                            <p class="text-gray-500">@${user.username}</p>
+                        </div>
+                        <button class="select-user-btn bg-blue-500 hover:bg-blue-600 text-white rounded-full px-3 py-1 text-sm ${selectedUserIds.has(user._id) ? 'bg-gray-600' : ''}" data-user-id="${user._id}" data-username="${user.username}" data-name="${user.name}" data-image="${user.profileImage}" ${selectedUserIds.has(user._id) ? 'disabled' : ''}>
+                            ${selectedUserIds.has(user._id) ? 'Selected' : 'Select'}
+                        </button>
+                    </div>
+                `).join('');
+
+                // Add event listeners to select buttons
+                document.querySelectorAll('.select-user-btn').forEach(btn => {
+                    if (!btn.dataset.hasListener) {
+                        btn.dataset.hasListener = 'true';
+                        btn.addEventListener('click', function() {
+                            const userId = this.dataset.userId;
+                            const username = this.dataset.username;
+                            const name = this.dataset.name;
+                            const image = this.dataset.image;
+
+                            if (selectedUserIds.has(userId)) {
+                                // Already selected, do nothing
+                                return;
+                            }
+
+                            // Add to selected users
+                            selectedUserIds.add(userId);
+                            addSelectedUser(userId, username, name, image);
+
+                            // Update button
+                            this.textContent = 'Selected';
+                            this.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                            this.classList.add('bg-gray-600');
+                            this.disabled = true;
+                        });
+                    }
+                });
+            } catch (error) {
+                console.error('Error searching users:', error);
+                inviteSearchResults.innerHTML = '<p class="text-red-500 text-center p-4">Error searching users</p>';
+            }
+        }, 300));
+
+        // Send invites
+        sendInvitesBtn.addEventListener('click', async function() {
+            if (selectedUserIds.size === 0) {
+                return;
+            }
+
+            this.disabled = true;
+            this.innerHTML = '<div class="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mx-auto"></div>';
+
+            try {
+                const response = await fetch(`/api/communities/<%= community.slug %>/invite`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userIds: Array.from(selectedUserIds)
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Show success message
+                    selectedUsersList.innerHTML = `
+                        <div class="bg-green-500/20 border border-green-500 text-green-500 p-4 rounded-lg">
+                            <p class="font-bold">Invites sent successfully!</p>
+                            <p class="mt-2">Successfully invited ${result.success.length} users to the community.</p>
+                        </div>
+                    `;
+                    sendInvitesBtn.classList.add('hidden');
+                } else {
+                    throw new Error(result.error || 'Failed to send invites');
+                }
+            } catch (error) {
+                console.error('Error sending invites:', error);
+                selectedUsersList.innerHTML += `
+                    <div class="bg-red-500/20 border border-red-500 text-red-500 p-4 rounded-lg mt-4">
+                        <p class="font-bold">Error sending invites</p>
+                        <p class="mt-2">${error.message || 'An unexpected error occurred'}</p>
+                    </div>
+                `;
+                this.textContent = 'Send Invites';
+                this.disabled = false;
+            }
+        });
+
+        // Debounce function
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Load followers on page load
+        loadFollowers();
+    <% } %>
+</script>

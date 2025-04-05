@@ -1,36 +1,35 @@
-<div class="p-4 border-b border-gray-800 tweet-card">
+<div class="p-4 border-b border-gray-800 hover:bg-gray-900/30 transition-colors">
     <div class="flex">
-        <img src="<%= tweet.profileImage || 'https://pbs.twimg.com/profile_images/1683325380441128960/yRsRRjGO_400x400.jpg' %>" alt="Profile" class="w-12 h-12 rounded-full mr-3">
-        <div class="flex-1">
-            <div class="flex items-center">
-                <h4 class="font-bold hover:underline cursor-pointer"><%= tweet.username || 'User' %></h4>
-                <span class="text-gray-500 ml-2">@<%= tweet.handle || (tweet.username ? tweet.username.toLowerCase() : 'user') %> · <%= tweet.time || 'now' %></span>
+        <img src="https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png" alt="Profile" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full mr-2 sm:mr-3 bg-gray-300 object-cover flex-shrink-0">
+        <div class="flex-1 min-w-0">
+            <div class="flex items-center flex-wrap">
+                <h4 class="font-bold hover:underline cursor-pointer mr-1 truncate">Routine of Nepal banda</h4>
+                <i class="fa-solid fa-circle-check text-blue-500 text-sm mr-1"></i>
+                <span class="text-gray-500 text-sm mr-1 truncate">@RONBupdates · 16h</span>
                 <i class="fa-solid fa-ellipsis ml-auto text-gray-500 hover:text-blue-500 cursor-pointer p-1 hover:bg-blue-500/10 rounded-full"></i>
             </div>
-            <p class="mt-2 mb-3"><%= tweet.content || '' %></p>
-            <% if (tweet.image) { %>
-                <div class="rounded-xl overflow-hidden mb-3 tweet-image">
-                    <img src="<%= tweet.image %>" alt="Tweet image" class="w-full" loading="lazy">
-                </div>
-            <% } %>
-            <div class="flex justify-between text-gray-500 max-w-md">
-                <button class="flex items-center p-2 tweet-action">
-                    <i class="fa-regular fa-comment mr-2"></i>
-                    <span><%= typeof tweet.comments === 'number' ? tweet.comments.toLocaleString() : '0' %></span>
+            <p class="mt-2 mb-3 break-words">Nepal Army Medical team helping people in Myanmar after recent Earthquakes. 🙏 🇳🇵</p>
+            <div class="rounded-2xl mb-3 w-full overflow-hidden bg-gray-800">
+                <img src="https://wallpaperaccess.com/full/1134010.jpg" alt="Tweet Image" class="w-full object-cover max-h-96">
+            </div>
+            <div class="flex justify-between text-gray-500 text-sm sm:text-base">
+                <button class="flex items-center p-1 sm:p-2 tweet-action">
+                    <i class="fa-regular fa-comment mr-1 sm:mr-2"></i>
+                    <span>18</span>
                 </button>
-                <button class="flex items-center p-2 tweet-action retweet">
-                    <i class="fa-solid fa-retweet mr-2"></i>
-                    <span><%= typeof tweet.retweets === 'number' ? tweet.retweets.toLocaleString() : '0' %></span>
+                <button class="flex items-center p-1 sm:p-2 tweet-action retweet">
+                    <i class="fa-solid fa-retweet mr-1 sm:mr-2"></i>
+                    <span>8</span>
                 </button>
-                <button class="flex items-center p-2 tweet-action like">
-                    <i class="fa-regular fa-heart mr-2"></i>
-                    <span><%= typeof tweet.likes === 'number' ? tweet.likes.toLocaleString() : '0' %></span>
+                <button class="flex items-center p-1 sm:p-2 tweet-action like">
+                    <i class="fa-regular fa-heart mr-1 sm:mr-2"></i>
+                    <span>86</span>
                 </button>
-                <button class="flex items-center p-2 tweet-action">
-                    <i class="fa-solid fa-chart-simple mr-2"></i>
-                    <span><%= typeof tweet.views === 'number' ? (tweet.views / 1000).toFixed(1) + 'K' : '0' %></span>
+                <button class="flex items-center p-1 sm:p-2 tweet-action">
+                    <i class="fa-solid fa-chart-simple mr-1 sm:mr-2"></i>
+                    <span>7.3K</span>
                 </button>
-                <button class="flex items-center p-2 tweet-action">
+                <button class="hidden sm:flex items-center p-1 sm:p-2 tweet-action">
                     <i class="fa-regular fa-bookmark"></i>
                 </button>
             </div>

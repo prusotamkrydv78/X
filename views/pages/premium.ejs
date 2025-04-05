@@ -1,23 +1,37 @@
 <!-- Header -->
 <header class="sticky top-0 bg-black bg-opacity-80 backdrop-blur-md z-10 p-4 border-b border-gray-800">
-    <div class="flex justify-between items-center">
+    <div class="flex items-center">
+        <a href="javascript:history.back()" class="mr-4 p-2 rounded-full hover:bg-gray-800">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
         <h1 class="text-xl font-bold">Premium</h1>
     </div>
 </header>
 
-<!-- Premium Content with static data -->
+<!-- Premium Content -->
 <div class="p-4 pb-16">
     <div class="text-center py-8">
-        <h2 class="text-3xl font-bold mb-2">Subscribe to Premium</h2>
-        <p class="text-gray-400 mb-8 max-w-md mx-auto">Get exclusive access to premium features and help support X.</p>
-        
-        <!-- Premium Plans with static data -->
+        <% if (req.user && req.user.isPremium) { %>
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 mb-6 text-left">
+                <h2 class="text-2xl font-bold mb-2">You're a Premium Subscriber!</h2>
+                <p class="mb-4">Enjoy all the exclusive features and benefits</p>
+                <div class="bg-white/20 rounded-lg p-4 mb-4">
+                    <i class="fa-solid fa-circle-check text-white text-xl mr-2"></i>
+                    <span class="font-bold">Premium active</span>
+                </div>
+            </div>
+        <% } else { %>
+            <h2 class="text-3xl font-bold mb-2">Subscribe to Premium</h2>
+            <p class="text-gray-400 mb-8 max-w-md mx-auto">Get exclusive access to premium features and help support X.</p>
+        <% } %>
+
+        <!-- Premium Plans -->
         <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             <!-- Basic Plan -->
             <div class="bg-gray-900 p-6 rounded-xl border border-gray-800">
                 <h3 class="text-2xl font-bold mb-2">Premium</h3>
                 <div class="text-3xl font-bold mb-4">$8<span class="text-gray-400 text-lg font-normal">/month</span></div>
-                
+
                 <ul class="text-left space-y-4 mb-6">
                     <li class="flex items-center">
                         <i class="fa-solid fa-check text-blue-500 mr-2"></i>
@@ -40,15 +54,23 @@
                         <span>Verification badge</span>
                     </li>
                 </ul>
-                
-                <button class="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-full py-3 font-bold">Subscribe</button>
+
+                <% if (req.user && req.user.isPremium) { %>
+                    <button disabled class="w-full bg-gray-700 text-white rounded-full py-3 font-bold cursor-not-allowed">Current Plan</button>
+                <% } else if (req.user) { %>
+                    <form action="/settings/premium/subscribe" method="POST">
+                        <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-full py-3 font-bold">Subscribe</button>
+                    </form>
+                <% } else { %>
+                    <a href="/login" class="block w-full bg-blue-500 hover:bg-blue-600 text-white rounded-full py-3 font-bold text-center">Login to Subscribe</a>
+                <% } %>
             </div>
-            
+
             <!-- Pro Plan -->
             <div class="bg-gray-900 p-6 rounded-xl border border-gray-800">
                 <h3 class="text-2xl font-bold mb-2">Premium+</h3>
                 <div class="text-3xl font-bold mb-4">$16<span class="text-gray-400 text-lg font-normal">/month</span></div>
-                
+
                 <ul class="text-left space-y-4 mb-6">
                     <li class="flex items-center">
                         <i class="fa-solid fa-check text-blue-500 mr-2"></i>
@@ -67,15 +89,15 @@
                         <span>Priority ranking in conversations</span>
                     </li>
                 </ul>
-                
-                <button class="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-full py-3 font-bold">Subscribe</button>
+
+                <button disabled class="w-full bg-gray-700 text-white rounded-full py-3 font-bold cursor-not-allowed">Coming Soon</button>
             </div>
         </div>
-        
+
         <!-- Features -->
         <div class="mt-16">
             <h3 class="text-2xl font-bold mb-8">Premium Features</h3>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
                 <!-- Feature 1 -->
                 <div class="p-4">
@@ -83,14 +105,14 @@
                     <h4 class="text-lg font-bold mb-2">Edit Post</h4>
                     <p class="text-gray-400">Edit your posts after publishing to fix typos or update information.</p>
                 </div>
-                
+
                 <!-- Feature 2 -->
                 <div class="p-4">
                     <i class="fa-solid fa-certificate text-blue-500 text-2xl mb-3"></i>
                     <h4 class="text-lg font-bold mb-2">Verification</h4>
                     <p class="text-gray-400">Get a blue verification badge to establish authenticity of your account.</p>
                 </div>
-                
+
                 <!-- Feature 3 -->
                 <div class="p-4">
                     <i class="fa-solid fa-folder text-blue-500 text-2xl mb-3"></i>
@@ -100,4 +122,4 @@
             </div>
         </div>
     </div>
-</div> 
+</div>

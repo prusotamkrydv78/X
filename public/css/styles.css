@@ -1,5 +1,7 @@
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #000;
+    color: #fff;
 }
 
 /* Custom scrollbar */
@@ -8,14 +10,14 @@ body {
     height: 8px;
 }
 ::-webkit-scrollbar-track {
-    background: #0f1419;
+    background: #000;
 }
 ::-webkit-scrollbar-thumb {
     background: #333;
     border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #444;
+    background: #555;
 }
 
 /* Responsive design */
@@ -55,17 +57,15 @@ body {
 }
 
 .tweet-action:hover {
-    background-color: rgba(29, 155, 240, 0.1);
+    color: #1d9bf0;
 }
 
 .tweet-action.like:hover {
-    color: rgb(249, 24, 128);
-    background-color: rgba(249, 24, 128, 0.1);
+    color: #f91880;
 }
 
 .tweet-action.retweet:hover {
-    color: rgb(0, 186, 124);
-    background-color: rgba(0, 186, 124, 0.1);
+    color: #00ba7c;
 }
 
 .tweet-image {
@@ -108,17 +108,18 @@ body {
 
 .skip-link {
     position: absolute;
-    top: -40px;
-    left: 0;
-    background: #1d9bf0;
+    left: -9999px;
+    z-index: 999;
+    padding: 1em;
+    background-color: #000;
     color: white;
-    padding: 8px;
-    z-index: 100;
-    transition: top 0.3s;
+    opacity: 0;
 }
 
 .skip-link:focus {
-    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 1;
 }
 
 /* Adding additional responsive styles */
@@ -158,8 +159,8 @@ body {
         display: block;
     }
     .main-content {
-        border-left: none;
-        border-right: none;
+        border-left: none !important;
+        border-right: none !important;
     }
     .post-button-text {
         display: none;
@@ -385,4 +386,190 @@ body {
   .grid {
     grid-template-columns: 1fr !important;
   }
+}
+
+/* Tab container scrollbar hide */
+.tab-container::-webkit-scrollbar {
+    display: none;
+}
+.tab-container {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Image loading styles */
+img {
+    transition: opacity 0.3s;
+}
+
+img.loading {
+    opacity: 0.6;
+}
+
+/* Ensure images maintain aspect ratio */
+.tweet-image {
+    max-height: 400px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.profile-image {
+    object-fit: cover;
+    background-color: #333;
+}
+
+/* Improve the grid system for better column sizing */
+@media (min-width: 768px) {
+    .grid-cols-12 > .col-span-3 {
+        max-width: 275px;
+    }
+    
+    .grid-cols-12 > .col-span-6 {
+        max-width: 600px;
+    }
+}
+
+/* Fix the sticky positioning for sidebars */
+.sticky {
+    position: -webkit-sticky;
+    position: sticky;
+}
+
+/* Dark mode styling */
+html.dark {
+    color-scheme: dark;
+}
+
+html:not(.dark) {
+    background-color: #fff;
+    color: #0f1419;
+}
+
+html:not(.dark) body {
+    background-color: #fff;
+    color: #0f1419;
+}
+
+html:not(.dark) .bg-black {
+    background-color: #fff;
+}
+
+html:not(.dark) .bg-gray-900 {
+    background-color: #f7f9f9;
+}
+
+html:not(.dark) .bg-gray-800 {
+    background-color: #eff3f4;
+}
+
+html:not(.dark) .border-gray-800 {
+    border-color: #eff3f4;
+}
+
+html:not(.dark) .text-gray-500 {
+    color: #536471;
+}
+
+html:not(.dark) .hover\:bg-gray-800:hover {
+    background-color: #e6e7e7;
+}
+
+html:not(.dark) .hover\:bg-gray-900\/30:hover {
+    background-color: rgba(247, 249, 249, 0.3);
+}
+
+/* Responsive fixes */
+@media (max-width: 768px) {
+    #main-content {
+        border-left: none !important;
+        border-right: none !important;
+    }
+    
+    .main-column {
+        width: 100% !important;
+    }
+}
+
+/* Improve mobile layout */
+@media (max-width: 640px) {
+    .col-span-12 {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
+    .tweet-action span {
+        font-size: 0.875rem;
+    }
+    
+    .py-4 {
+        padding-top: 0.75rem !important;
+        padding-bottom: 0.75rem !important;
+    }
+}
+
+/* Ensure grid columns are properly sized */
+@media (min-width: 768px) {
+    .grid-cols-12 > .md\:col-span-6 {
+        width: 600px !important;
+        max-width: 600px !important;
+        flex: 0 0 600px !important;
+    }
+    
+    .grid-cols-12 > .col-span-2 {
+        width: 275px !important;
+        max-width: 275px !important;
+    }
+    
+    .grid-cols-12 > .col-span-4 {
+        width: 350px !important;
+        max-width: 350px !important;
+    }
+}
+
+/* Mobile tweaks */
+.mobile-nav {
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+#compose-tweet-mobile {
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Fix iOS height issues */
+@supports (-webkit-touch-callout: none) {
+    .min-h-screen {
+        min-height: -webkit-fill-available;
+    }
+    
+    .h-screen {
+        height: -webkit-fill-available;
+    }
+    
+    body, html {
+        height: -webkit-fill-available;
+    }
+}
+
+/* Proper z-index layering */
+.mobile-nav {
+    z-index: 40;
+}
+
+#compose-tweet-mobile {
+    z-index: 41;
+}
+
+#compose-modal {
+    z-index: 50;
+}
+
+/* Fix overflow issues */
+body {
+    overflow-x: hidden;
+}
+
+.overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
 } 

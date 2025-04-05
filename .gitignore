@@ -1,6 +1,36 @@
-/node_modules
-/dist
-/build
-/coverage
-/logs
-/temp
+# Dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+package-lock.json
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build files
+dist/
+build/
+coverage/
+
+# Logs
+logs/
+*.log
+temp/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Uploaded files
+public/uploads/

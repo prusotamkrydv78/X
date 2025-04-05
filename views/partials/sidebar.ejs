@@ -1,4 +1,4 @@
-<div class="h-full flex flex-col p-2 justify-between">
+<div class="h-screen sticky top-0 flex flex-col justify-between py-2">
     <!-- X Logo -->
     <div>
         <div class="p-3 rounded-full hover:bg-gray-800 w-fit">
@@ -21,13 +21,15 @@
                 <i class="fa-solid fa-magnifying-glass mr-4"></i>
                 <span>Explore</span>
             </a>
-            <a href="/notifications" class="flex items-center p-3 rounded-full <%= activePage === 'notifications' ? 'font-bold' : 'hover:bg-gray-800' %> text-xl">
+            <a href="/notifications" class="flex items-center p-3 rounded-full <%= activePage === 'notifications' ? 'font-bold' : 'hover:bg-gray-800' %> text-xl relative">
                 <i class="<%= activePage === 'notifications' ? 'fa-solid' : 'fa-regular' %> fa-bell mr-4"></i>
                 <span>Notifications</span>
+                <span class="notification-badge absolute top-2 left-5 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center text-xs hidden"></span>
             </a>
-            <a href="/messages" class="flex items-center p-3 rounded-full <%= activePage === 'messages' ? 'font-bold' : 'hover:bg-gray-800' %> text-xl">
+            <a href="/messages" class="flex items-center p-3 rounded-full <%= activePage === 'messages' ? 'font-bold' : 'hover:bg-gray-800' %> text-xl relative">
                 <i class="<%= activePage === 'messages' ? 'fa-solid' : 'fa-regular' %> fa-envelope mr-4"></i>
                 <span>Messages</span>
+                <span class="message-badge absolute top-2 left-5 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center text-xs hidden"></span>
             </a>
             <a href="/communities" class="flex items-center p-3 rounded-full <%= activePage === 'communities' ? 'font-bold' : 'hover:bg-gray-800' %> text-xl">
                 <i class="<%= activePage === 'communities' ? 'fa-solid' : 'fa-regular' %> fa-user-group mr-4"></i>
@@ -41,67 +43,95 @@
                 <i class="<%= activePage === 'profile' ? 'fa-solid' : 'fa-regular' %> fa-user mr-4"></i>
                 <span>Profile</span>
             </a>
-            <a href="#" class="flex items-center p-3 rounded-full hover:bg-gray-800 text-xl">
+            <button type="button" id="more-button" class="flex items-center p-3 rounded-full hover:bg-gray-800 text-xl w-full text-left">
                 <i class="fa-solid fa-ellipsis mr-4"></i>
                 <span>More</span>
-            </a>
+            </button>
         </nav>
 
         <!-- Post Button -->
-        <a href="#" class="bg-blue-500 hover:bg-blue-600 text-white rounded-full py-3 px-4 text-center font-bold text-lg block mt-4">
+        <button id="compose-tweet" class="bg-blue-500 hover:bg-blue-600 text-white rounded-full py-3 px-4 text-center font-bold text-lg block mt-4 w-full transition-colors">
             Post
-        </a>
+        </button>
     </div>
 
     <!-- Profile -->
     <div class="mb-4">
-        <button class="w-full flex items-center p-3 rounded-full hover:bg-gray-800 justify-between">
-            <div class="flex items-center">
-                <img src="https://pbs.twimg.com/profile_images/1683325380441128960/yRsRRjGO_400x400.jpg" alt="Profile" class="w-10 h-10 rounded-full mr-3">
-                <div class="text-left">
-                    <div class="font-bold">Username</div>
-                    <div class="text-gray-500">@username</div>
+        <% if (req.isAuthenticated && req.isAuthenticated()) { %>
+            <button class="w-full flex items-center p-3 rounded-full hover:bg-gray-800 justify-between transition-colors">
+                <div class="flex items-center">
+                    <img src="<%= req.user.profileImage %>" alt="<%= req.user.name %>" class="w-10 h-10 rounded-full mr-3 bg-gray-300 object-cover">
+                    <div class="text-left">
+                        <div class="font-bold"><%= req.user.name %></div>
+                        <div class="text-gray-500">@<%= req.user.username %></div>
+                    </div>
                 </div>
-            </div>
-            <i class="fa-solid fa-ellipsis"></i>
+                <i class="fa-solid fa-ellipsis"></i>
+            </button>
+        <% } else { %>
+            <a href="/login" class="w-full flex items-center p-3 rounded-full hover:bg-gray-800 justify-between transition-colors">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full mr-3 bg-gray-700 flex items-center justify-center">
+                        <i class="fa-regular fa-user text-gray-400"></i>
+                    </div>
+                    <div class="text-left">
+                        <div class="font-bold">Log in</div>
+                        <div class="text-gray-500">to use all features</div>
+                    </div>
+                </div>
+            </a>
+        <% } %>
+    </div>
+
+    <!-- More dropdown (hidden by default) -->
+    <div id="more-dropdown" class="hidden bg-black border border-gray-800 rounded-xl shadow-lg p-4 absolute bottom-20 left-0 lg:left-16 z-20 w-64">
+        <button id="theme-toggle" class="flex items-center p-3 rounded-full hover:bg-gray-800 w-full text-left transition-colors">
+            <i class="fa-solid fa-moon mr-4 dark-only"></i>
+            <i class="fa-solid fa-sun mr-4 light-only hidden"></i>
+            <span class="dark-only">Switch to Light mode</span>
+            <span class="light-only hidden">Switch to Dark mode</span>
         </button>
+        <a href="/logout" class="flex items-center p-3 rounded-full hover:bg-gray-800 w-full text-left transition-colors">
+            <i class="fa-solid fa-arrow-right-from-bracket mr-4"></i>
+            <span>Log out</span>
+        </a>
     </div>
 </div>
 
 <!-- Compose Tweet Modal (hidden by default) -->
-<div id="compose-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
-    <div class="bg-black w-full max-w-xl rounded-2xl p-4 relative border border-gray-800">
-        <button id="close-compose" class="absolute top-4 left-4 text-xl hover:bg-gray-800 rounded-full p-2">
+<div id="compose-modal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+    <div class="bg-black w-full max-w-xl rounded-2xl p-4 relative border border-gray-800 shadow-lg">
+        <button id="close-compose" class="absolute top-4 left-4 text-xl hover:bg-gray-800 rounded-full p-2 transition-colors">
             <i class="fa-solid fa-times"></i>
         </button>
-        
+
         <div class="ml-12 mt-12">
             <div class="flex">
                 <img src="https://pbs.twimg.com/profile_images/1683325380441128960/yRsRRjGO_400x400.jpg" alt="Profile" class="w-12 h-12 rounded-full mr-3">
                 <div class="flex-1">
                     <div class="border-b border-gray-800 pb-3">
                         <textarea placeholder="What is happening?!" class="w-full bg-transparent text-xl outline-none resize-none h-32 placeholder-gray-500"></textarea>
-                        
+
                         <div class="mb-3">
-                            <button class="text-blue-500 text-sm font-bold rounded-full px-3 py-1 border border-blue-500 hover:bg-blue-500/10">
+                            <button class="text-blue-500 text-sm font-bold rounded-full px-3 py-1 border border-blue-500 hover:bg-blue-500/10 transition-colors">
                                 Everyone <i class="fa-solid fa-caret-down ml-1"></i>
                             </button>
                         </div>
                     </div>
-                    
+
                     <div class="flex justify-between items-center pt-3">
                         <div class="flex text-blue-500 gap-2">
-                            <button class="p-2 rounded-full hover:bg-blue-500/10"><i class="fa-regular fa-image"></i></button>
-                            <button class="p-2 rounded-full hover:bg-blue-500/10"><i class="fa-solid fa-gift"></i></button>
-                            <button class="p-2 rounded-full hover:bg-blue-500/10"><i class="fa-regular fa-chart-bar"></i></button>
-                            <button class="p-2 rounded-full hover:bg-blue-500/10"><i class="fa-regular fa-face-smile"></i></button>
-                            <button class="p-2 rounded-full hover:bg-blue-500/10"><i class="fa-regular fa-calendar"></i></button>
-                            <button class="p-2 rounded-full hover:bg-blue-500/10"><i class="fa-solid fa-location-dot"></i></button>
+                            <button class="p-2 rounded-full hover:bg-blue-500/10 transition-colors"><i class="fa-regular fa-image"></i></button>
+                            <button class="p-2 rounded-full hover:bg-blue-500/10 transition-colors"><i class="fa-solid fa-gift"></i></button>
+                            <button class="p-2 rounded-full hover:bg-blue-500/10 transition-colors"><i class="fa-regular fa-chart-bar"></i></button>
+                            <button class="p-2 rounded-full hover:bg-blue-500/10 transition-colors"><i class="fa-regular fa-face-smile"></i></button>
+                            <button class="p-2 rounded-full hover:bg-blue-500/10 transition-colors"><i class="fa-regular fa-calendar"></i></button>
+                            <button class="p-2 rounded-full hover:bg-blue-500/10 transition-colors"><i class="fa-solid fa-location-dot"></i></button>
                         </div>
-                        <button class="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-4 py-2 font-bold disabled:opacity-50 disabled:cursor-not-allowed">Post</button>
+                        <button class="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-4 py-2 font-bold opacity-50 cursor-not-allowed transition-colors">Post</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div> 
+</div>

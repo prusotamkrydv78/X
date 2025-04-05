@@ -1,0 +1,142 @@
+<!-- Header -->
+<header class="sticky top-0 bg-black bg-opacity-80 backdrop-blur-md z-10 p-4 border-b border-gray-800">
+    <div class="flex justify-between items-center">
+        <div class="flex items-center">
+            <a href="/users/<%= req.user.username %>" class="mr-4 p-2 rounded-full hover:bg-gray-800">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            <h1 class="text-xl font-bold">Edit profile</h1>
+        </div>
+        <button type="submit" form="profile-form" class="bg-white text-black rounded-full px-4 py-1.5 font-bold hover:bg-gray-200">
+            Save
+        </button>
+    </div>
+</header>
+
+<!-- Edit Profile Form -->
+<form id="profile-form" action="/settings/profile" method="POST" enctype="multipart/form-data">
+    <!-- Cover Photo -->
+    <div class="relative h-48 bg-gray-800">
+        <% if (req.user.coverImage) { %>
+            <img src="<%= req.user.coverImage %>" alt="Cover photo" class="w-full h-full object-cover">
+        <% } %>
+        <label class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 cursor-pointer">
+            <i class="fa-solid fa-camera text-2xl"></i>
+            <input type="file" name="coverImage" class="hidden" accept="image/*">
+        </label>
+    </div>
+    
+    <!-- Profile Photo -->
+    <div class="relative mx-4 -mt-16 mb-4">
+        <div class="w-32 h-32 rounded-full border-4 border-black overflow-hidden bg-gray-800">
+            <img src="<%= req.user.profileImage %>" alt="Profile photo" class="w-full h-full object-cover">
+        </div>
+        <label class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full cursor-pointer">
+            <i class="fa-solid fa-camera text-2xl"></i>
+            <input type="file" name="profileImage" class="hidden" accept="image/*">
+        </label>
+    </div>
+    
+    <!-- Form Fields -->
+    <div class="p-4 space-y-4">
+        <!-- Name -->
+        <div>
+            <label class="block text-gray-500 mb-1">Name</label>
+            <input 
+                type="text" 
+                name="name" 
+                value="<%= req.user.name %>" 
+                class="w-full bg-black border border-gray-800 rounded-md p-3 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                maxlength="50"
+            >
+            <div class="text-right text-gray-500 text-sm mt-1">
+                <span id="name-count"><%= req.user.name.length %></span>/50
+            </div>
+        </div>
+        
+        <!-- Bio -->
+        <div>
+            <label class="block text-gray-500 mb-1">Bio</label>
+            <textarea 
+                name="bio" 
+                class="w-full bg-black border border-gray-800 rounded-md p-3 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 resize-none h-24"
+                maxlength="160"
+            ><%= req.user.bio %></textarea>
+            <div class="text-right text-gray-500 text-sm mt-1">
+                <span id="bio-count"><%= req.user.bio ? req.user.bio.length : 0 %></span>/160
+            </div>
+        </div>
+        
+        <!-- Location -->
+        <div>
+            <label class="block text-gray-500 mb-1">Location</label>
+            <input 
+                type="text" 
+                name="location" 
+                value="<%= req.user.location %>" 
+                class="w-full bg-black border border-gray-800 rounded-md p-3 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                maxlength="30"
+            >
+            <div class="text-right text-gray-500 text-sm mt-1">
+                <span id="location-count"><%= req.user.location ? req.user.location.length : 0 %></span>/30
+            </div>
+        </div>
+        
+        <!-- Website -->
+        <div>
+            <label class="block text-gray-500 mb-1">Website</label>
+            <input 
+                type="url" 
+                name="website" 
+                value="<%= req.user.website %>" 
+                class="w-full bg-black border border-gray-800 rounded-md p-3 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="https://example.com"
+            >
+        </div>
+    </div>
+</form>
+
+<script>
+    // Character counters
+    document.querySelector('input[name="name"]').addEventListener('input', function() {
+        document.getElementById('name-count').textContent = this.value.length;
+    });
+    
+    document.querySelector('textarea[name="bio"]').addEventListener('input', function() {
+        document.getElementById('bio-count').textContent = this.value.length;
+    });
+    
+    document.querySelector('input[name="location"]').addEventListener('input', function() {
+        document.getElementById('location-count').textContent = this.value.length;
+    });
+    
+    // Preview uploaded images
+    document.querySelector('input[name="profileImage"]').addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.querySelector('img[alt="Profile photo"]').src = e.target.result;
+            }
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+    
+    document.querySelector('input[name="coverImage"]').addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const coverImg = document.querySelector('img[alt="Cover photo"]');
+                if (coverImg) {
+                    coverImg.src = e.target.result;
+                } else {
+                    const newImg = document.createElement('img');
+                    newImg.src = e.target.result;
+                    newImg.alt = "Cover photo";
+                    newImg.className = "w-full h-full object-cover";
+                    document.querySelector('.relative.h-48').prepend(newImg);
+                }
+            }
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+</script>

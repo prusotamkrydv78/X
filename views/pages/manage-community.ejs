@@ -1,0 +1,488 @@
+<!-- Header -->
+<header class="sticky top-0 bg-black bg-opacity-80 backdrop-blur-md z-10 p-4 border-b border-gray-800">
+    <div class="flex items-center">
+        <a href="/communities/<%= community.slug %>" class="mr-4 p-2 rounded-full hover:bg-gray-800">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <h1 class="text-xl font-bold">Manage <%= community.name %></h1>
+    </div>
+</header>
+
+<div class="max-w-2xl mx-auto p-4 pb-16">
+    <% if (error && error.length > 0) { %>
+        <div class="bg-red-500/20 border border-red-500 text-red-500 p-4 rounded-lg mb-4">
+            <%= error %>
+        </div>
+    <% } %>
+    
+    <% if (success && success.length > 0) { %>
+        <div class="bg-green-500/20 border border-green-500 text-green-500 p-4 rounded-lg mb-4">
+            <%= success %>
+        </div>
+    <% } %>
+    
+    <!-- Management Tabs -->
+    <div class="border-b border-gray-800 flex mb-6">
+        <a href="/communities/<%= community.slug %>/manage?tab=settings" class="flex-1 text-center py-4 <%= !req.query.tab || req.query.tab === 'settings' ? 'border-b-4 border-blue-500 font-bold' : 'text-gray-500 hover:bg-gray-900 transition-colors' %>">Settings</a>
+        <a href="/communities/<%= community.slug %>/manage?tab=members" class="flex-1 text-center py-4 <%= req.query.tab === 'members' ? 'border-b-4 border-blue-500 font-bold' : 'text-gray-500 hover:bg-gray-900 transition-colors' %>">Members</a>
+        <a href="/communities/<%= community.slug %>/manage?tab=rules" class="flex-1 text-center py-4 <%= req.query.tab === 'rules' ? 'border-b-4 border-blue-500 font-bold' : 'text-gray-500 hover:bg-gray-900 transition-colors' %>">Rules</a>
+    </div>
+    
+    <% if (!req.query.tab || req.query.tab === 'settings') { %>
+        <!-- Settings Tab -->
+        <form action="/communities/<%= community.slug %>/update" method="POST" enctype="multipart/form-data">
+            <!-- Community Name -->
+            <div class="mb-6">
+                <label for="name" class="block text-sm font-medium text-gray-400 mb-2">Community name</label>
+                <input 
+                    type="text" 
+                    id="name" 
+                    name="name" 
+                    class="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Enter community name"
+                    value="<%= community.name %>"
+                    required
+                    maxlength="50"
+                >
+                <p class="text-gray-500 text-sm mt-1">50 characters maximum</p>
+            </div>
+            
+            <!-- Community Description -->
+            <div class="mb-6">
+                <label for="description" class="block text-sm font-medium text-gray-400 mb-2">Description</label>
+                <textarea 
+                    id="description" 
+                    name="description" 
+                    class="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 h-32 resize-none"
+                    placeholder="Tell people what this community is about"
+                    required
+                    maxlength="500"
+                ><%= community.description %></textarea>
+                <p class="text-gray-500 text-sm mt-1">500 characters maximum</p>
+            </div>
+            
+            <!-- Community Topics -->
+            <div class="mb-6">
+                <label for="topics" class="block text-sm font-medium text-gray-400 mb-2">Topics (comma separated)</label>
+                <input 
+                    type="text" 
+                    id="topics" 
+                    name="topics" 
+                    class="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="technology, programming, web development"
+                    value="<%= community.topics ? community.topics.join(', ') : '' %>"
+                >
+                <p class="text-gray-500 text-sm mt-1">Add topics to help people find your community</p>
+            </div>
+            
+            <!-- Community Privacy -->
+            <div class="mb-6">
+                <label class="flex items-center">
+                    <input type="checkbox" name="isPrivate" class="form-checkbox h-5 w-5 text-blue-500 rounded bg-gray-800 border-gray-700" <%= community.isPrivate ? 'checked' : '' %>>
+                    <span class="ml-2 text-gray-300">Make this community private</span>
+                </label>
+                <p class="text-gray-500 text-sm mt-1 ml-7">Private communities require moderator approval to join</p>
+            </div>
+            
+            <!-- Community Images -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- Profile Image -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Community profile image</label>
+                    <div class="relative border-2 border-dashed border-gray-700 rounded-lg p-4 text-center">
+                        <div id="profile-preview" class="w-32 h-32 mx-auto mb-4 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden">
+                            <img src="<%= community.profileImage %>" alt="<%= community.name %>" class="w-full h-full object-cover">
+                        </div>
+                        
+                        <label class="bg-gray-800 hover:bg-gray-700 text-white rounded-full px-4 py-2 cursor-pointer inline-block">
+                            <span>Change image</span>
+                            <input type="file" name="profileImage" class="hidden" accept="image/*" id="profile-input">
+                        </label>
+                        
+                        <p class="text-gray-500 text-sm mt-2">Recommended: Square image, 400x400px</p>
+                    </div>
+                </div>
+                
+                <!-- Cover Image -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Community cover image</label>
+                    <div class="relative border-2 border-dashed border-gray-700 rounded-lg p-4 text-center">
+                        <div id="cover-preview" class="w-full h-32 mx-auto mb-4 rounded-lg bg-gray-700 flex items-center justify-center overflow-hidden">
+                            <img src="<%= community.coverImage %>" alt="Cover" class="w-full h-full object-cover">
+                        </div>
+                        
+                        <label class="bg-gray-800 hover:bg-gray-700 text-white rounded-full px-4 py-2 cursor-pointer inline-block">
+                            <span>Change image</span>
+                            <input type="file" name="coverImage" class="hidden" accept="image/*" id="cover-input">
+                        </label>
+                        
+                        <p class="text-gray-500 text-sm mt-2">Recommended: 1500x500px</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Submit Button -->
+            <div class="flex justify-end">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-6 py-3 font-bold">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    <% } else if (req.query.tab === 'members') { %>
+        <!-- Members Tab -->
+        <div class="bg-gray-900 rounded-xl p-4 mb-6">
+            <h3 class="text-lg font-bold mb-4">Pending Requests</h3>
+            
+            <% if (community.pendingMembers && community.pendingMembers.length > 0) { %>
+                <div class="space-y-3">
+                    <% community.pendingMembers.forEach(member => { %>
+                        <div class="flex items-center p-2 hover:bg-gray-800 rounded-lg transition-colors">
+                            <a href="/users/<%= member.username %>" class="flex-shrink-0">
+                                <img src="<%= member.profileImage %>" alt="<%= member.name %>" class="w-10 h-10 rounded-full mr-3 object-cover">
+                            </a>
+                            <div class="flex-1">
+                                <a href="/users/<%= member.username %>" class="font-bold hover:underline"><%= member.name %></a>
+                                <p class="text-gray-500">@<%= member.username %></p>
+                            </div>
+                            
+                            <div class="flex gap-2">
+                                <form action="/communities/<%= community.slug %>/approve/<%= member._id %>" method="POST">
+                                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-3 py-1 text-sm">
+                                        Approve
+                                    </button>
+                                </form>
+                                <form action="/communities/<%= community.slug %>/reject/<%= member._id %>" method="POST">
+                                    <button type="submit" class="bg-transparent border border-gray-600 text-white hover:bg-gray-800 rounded-full px-3 py-1 text-sm">
+                                        Reject
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <p class="text-gray-500 text-center py-4">No pending requests</p>
+            <% } %>
+        </div>
+        
+        <div class="bg-gray-900 rounded-xl p-4 mb-6">
+            <h3 class="text-lg font-bold mb-4">Moderators</h3>
+            
+            <div class="space-y-3">
+                <% community.moderators.forEach(mod => { %>
+                    <div class="flex items-center p-2 hover:bg-gray-800 rounded-lg transition-colors">
+                        <a href="/users/<%= mod.username %>" class="flex-shrink-0">
+                            <img src="<%= mod.profileImage %>" alt="<%= mod.name %>" class="w-10 h-10 rounded-full mr-3 object-cover">
+                        </a>
+                        <div class="flex-1">
+                            <a href="/users/<%= mod.username %>" class="font-bold hover:underline"><%= mod.name %></a>
+                            <p class="text-gray-500">@<%= mod.username %></p>
+                        </div>
+                        
+                        <% if (!mod._id.equals(community.creator._id) && isCreator) { %>
+                            <form action="/communities/<%= community.slug %>/remove-moderator/<%= mod._id %>" method="POST">
+                                <button type="submit" class="text-red-500 hover:text-red-400">
+                                    <i class="fa-solid fa-user-minus"></i>
+                                </button>
+                            </form>
+                        <% } else if (mod._id.equals(community.creator._id)) { %>
+                            <span class="text-blue-500 text-sm">Creator</span>
+                        <% } %>
+                    </div>
+                <% }); %>
+            </div>
+            
+            <% if (isCreator) { %>
+                <div class="mt-4 pt-4 border-t border-gray-800">
+                    <h4 class="font-bold mb-2">Add Moderator</h4>
+                    <div class="relative">
+                        <input type="text" id="mod-search" placeholder="Search members to add as moderator" class="w-full bg-gray-800 rounded-full py-2 pl-10 pr-4 focus:outline-none">
+                        <i class="fa-solid fa-search absolute left-3 top-3 text-gray-500"></i>
+                    </div>
+                    <div id="mod-search-results" class="mt-2 max-h-64 overflow-y-auto"></div>
+                </div>
+            <% } %>
+        </div>
+        
+        <div class="bg-gray-900 rounded-xl p-4">
+            <h3 class="text-lg font-bold mb-4">All Members (<%= community.members.length %>)</h3>
+            
+            <div class="space-y-3">
+                <% community.members.forEach(member => { %>
+                    <% if (!community.moderators.some(mod => mod._id.equals(member._id))) { %>
+                        <div class="flex items-center p-2 hover:bg-gray-800 rounded-lg transition-colors">
+                            <a href="/users/<%= member.username %>" class="flex-shrink-0">
+                                <img src="<%= member.profileImage %>" alt="<%= member.name %>" class="w-10 h-10 rounded-full mr-3 object-cover">
+                            </a>
+                            <div class="flex-1">
+                                <a href="/users/<%= member.username %>" class="font-bold hover:underline"><%= member.name %></a>
+                                <p class="text-gray-500">@<%= member.username %></p>
+                            </div>
+                            
+                            <div class="flex gap-2">
+                                <% if (isCreator || isModerator) { %>
+                                    <form action="/communities/<%= community.slug %>/remove-member/<%= member._id %>" method="POST">
+                                        <button type="submit" class="text-red-500 hover:text-red-400">
+                                            <i class="fa-solid fa-user-minus"></i>
+                                        </button>
+                                    </form>
+                                    
+                                    <% if (isCreator) { %>
+                                        <form action="/communities/<%= community.slug %>/add-moderator/<%= member._id %>" method="POST">
+                                            <button type="submit" class="text-blue-500 hover:text-blue-400">
+                                                <i class="fa-solid fa-user-shield"></i>
+                                            </button>
+                                        </form>
+                                    <% } %>
+                                <% } %>
+                            </div>
+                        </div>
+                    <% } %>
+                <% }); %>
+            </div>
+        </div>
+    <% } else if (req.query.tab === 'rules') { %>
+        <!-- Rules Tab -->
+        <div class="bg-gray-900 rounded-xl p-6 mb-6">
+            <h3 class="text-xl font-bold mb-4">Community Rules</h3>
+            
+            <form action="/communities/<%= community.slug %>/rules" method="POST">
+                <div id="rules-container">
+                    <% if (community.rules && community.rules.length > 0) { %>
+                        <% community.rules.forEach((rule, index) => { %>
+                            <div class="rule-item mb-4 p-4 bg-gray-800 rounded-lg">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h4 class="font-bold">Rule <%= index + 1 %></h4>
+                                    <button type="button" class="remove-rule text-red-500 hover:text-red-400">
+                                        <i class="fa-solid fa-times"></i>
+                                    </button>
+                                </div>
+                                
+                                <div class="mb-2">
+                                    <input 
+                                        type="text" 
+                                        name="rule_titles[]" 
+                                        placeholder="Rule title" 
+                                        class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value="<%= rule.title %>"
+                                        required
+                                    >
+                                </div>
+                                
+                                <div>
+                                    <textarea 
+                                        name="rule_descriptions[]" 
+                                        placeholder="Rule description" 
+                                        class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none h-20"
+                                        required
+                                    ><%= rule.description %></textarea>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="rule-item mb-4 p-4 bg-gray-800 rounded-lg">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-bold">Rule 1</h4>
+                                <button type="button" class="remove-rule text-red-500 hover:text-red-400">
+                                    <i class="fa-solid fa-times"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="mb-2">
+                                <input 
+                                    type="text" 
+                                    name="rule_titles[]" 
+                                    placeholder="Rule title" 
+                                    class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    required
+                                >
+                            </div>
+                            
+                            <div>
+                                <textarea 
+                                    name="rule_descriptions[]" 
+                                    placeholder="Rule description" 
+                                    class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none h-20"
+                                    required
+                                ></textarea>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+                
+                <button type="button" id="add-rule" class="mt-2 text-blue-500 hover:text-blue-400 flex items-center">
+                    <i class="fa-solid fa-plus mr-2"></i> Add Rule
+                </button>
+                
+                <div class="flex justify-end mt-6">
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-6 py-3 font-bold">
+                        Save Rules
+                    </button>
+                </div>
+            </form>
+        </div>
+    <% } %>
+</div>
+
+<script>
+    // Image preview functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        // Profile image preview
+        const profileInput = document.getElementById('profile-input');
+        const profilePreview = document.getElementById('profile-preview');
+        
+        if (profileInput && profilePreview) {
+            profileInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        profilePreview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+                    };
+                    
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        }
+        
+        // Cover image preview
+        const coverInput = document.getElementById('cover-input');
+        const coverPreview = document.getElementById('cover-preview');
+        
+        if (coverInput && coverPreview) {
+            coverInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        coverPreview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+                    };
+                    
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        }
+        
+        // Rules functionality
+        const addRuleBtn = document.getElementById('add-rule');
+        const rulesContainer = document.getElementById('rules-container');
+        
+        if (addRuleBtn && rulesContainer) {
+            // Add new rule
+            addRuleBtn.addEventListener('click', function() {
+                const ruleItems = rulesContainer.querySelectorAll('.rule-item');
+                const newIndex = ruleItems.length + 1;
+                
+                const newRule = document.createElement('div');
+                newRule.className = 'rule-item mb-4 p-4 bg-gray-800 rounded-lg';
+                newRule.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <h4 class="font-bold">Rule ${newIndex}</h4>
+                        <button type="button" class="remove-rule text-red-500 hover:text-red-400">
+                            <i class="fa-solid fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="mb-2">
+                        <input 
+                            type="text" 
+                            name="rule_titles[]" 
+                            placeholder="Rule title" 
+                            class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            required
+                        >
+                    </div>
+                    
+                    <div>
+                        <textarea 
+                            name="rule_descriptions[]" 
+                            placeholder="Rule description" 
+                            class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none h-20"
+                            required
+                        ></textarea>
+                    </div>
+                `;
+                
+                rulesContainer.appendChild(newRule);
+                
+                // Add event listener to the new remove button
+                newRule.querySelector('.remove-rule').addEventListener('click', function() {
+                    newRule.remove();
+                    updateRuleNumbers();
+                });
+            });
+            
+            // Remove rule
+            document.querySelectorAll('.remove-rule').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    this.closest('.rule-item').remove();
+                    updateRuleNumbers();
+                });
+            });
+            
+            // Update rule numbers
+            function updateRuleNumbers() {
+                const ruleItems = rulesContainer.querySelectorAll('.rule-item');
+                ruleItems.forEach((item, index) => {
+                    item.querySelector('h4').textContent = `Rule ${index + 1}`;
+                });
+            }
+        }
+        
+        // Moderator search
+        const modSearch = document.getElementById('mod-search');
+        const modSearchResults = document.getElementById('mod-search-results');
+        
+        if (modSearch && modSearchResults) {
+            modSearch.addEventListener('input', debounce(async () => {
+                const query = modSearch.value.trim();
+                
+                if (query.length < 2) {
+                    modSearchResults.innerHTML = '';
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(`/api/communities/<%= community.slug %>/members/search?q=${encodeURIComponent(query)}`);
+                    const members = await response.json();
+                    
+                    if (members.length === 0) {
+                        modSearchResults.innerHTML = '<p class="text-gray-500 p-4 text-center">No members found</p>';
+                        return;
+                    }
+                    
+                    modSearchResults.innerHTML = members.map(member => `
+                        <div class="flex items-center p-2 hover:bg-gray-800 rounded-lg">
+                            <img src="${member.profileImage}" alt="${member.name}" class="w-8 h-8 rounded-full mr-2 object-cover">
+                            <div class="flex-1">
+                                <p class="font-bold">${member.name}</p>
+                                <p class="text-gray-500 text-sm">@${member.username}</p>
+                            </div>
+                            <form action="/communities/<%= community.slug %>/add-moderator/${member._id}" method="POST">
+                                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-3 py-1 text-sm">
+                                    Add
+                                </button>
+                            </form>
+                        </div>
+                    `).join('');
+                } catch (error) {
+                    console.error('Error searching members:', error);
+                    modSearchResults.innerHTML = '<p class="text-red-500 p-4 text-center">Error searching members</p>';
+                }
+            }, 300));
+        }
+        
+        // Debounce function
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+    });
+</script>

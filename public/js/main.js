@@ -1,13 +1,37 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Toggle More dropdown
+    // Compose tweet modal functionality
+    const composeButton = document.getElementById('compose-tweet');
+    const composeModalButton = document.getElementById('compose-tweet-mobile');
+    const composeModal = document.getElementById('compose-modal');
+    const closeComposeButton = document.getElementById('close-compose');
+
+    if (composeButton && composeModal) {
+        composeButton.addEventListener('click', function() {
+            composeModal.classList.remove('hidden');
+        });
+    }
+
+    if (composeModalButton && composeModal) {
+        composeModalButton.addEventListener('click', function() {
+            composeModal.classList.remove('hidden');
+        });
+    }
+
+    if (closeComposeButton && composeModal) {
+        closeComposeButton.addEventListener('click', function() {
+            composeModal.classList.add('hidden');
+        });
+    }
+
+    // More dropdown functionality
     const moreButton = document.getElementById('more-button');
     const moreDropdown = document.getElementById('more-dropdown');
-    
+
     if (moreButton && moreDropdown) {
         moreButton.addEventListener('click', function() {
             moreDropdown.classList.toggle('hidden');
         });
-        
+
         // Close dropdown when clicking outside
         document.addEventListener('click', function(event) {
             if (!moreButton.contains(event.target) && !moreDropdown.contains(event.target)) {
@@ -15,207 +39,137 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
-    // Theme toggle functionality - IMPROVED VERSION
+
+    // Theme toggle functionality
     const themeToggle = document.getElementById('theme-toggle');
-    const htmlElement = document.documentElement;
-    
-    // Apply theme settings on load
-    function applyTheme(theme) {
-        if (theme === 'light') {
-            htmlElement.classList.remove('dark');
-            htmlElement.classList.add('light');
-            document.body.style.backgroundColor = '#ffffff';
-            document.body.style.color = '#0f1419';
-            
-            // Update icon visibility
-            document.querySelectorAll('.dark-only').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.light-only').forEach(el => el.classList.remove('hidden'));
-            
-            // Update background colors
-            document.querySelectorAll('.bg-black').forEach(el => {
-                el.classList.remove('bg-black');
-                el.classList.add('bg-white');
-            });
-            
-            document.querySelectorAll('.bg-gray-900').forEach(el => {
-                el.classList.remove('bg-gray-900');
-                el.classList.add('bg-gray-100');
-            });
-            
-            document.querySelectorAll('.bg-gray-800').forEach(el => {
-                el.classList.remove('bg-gray-800');
-                el.classList.add('bg-gray-200');
-            });
-            
-            // Update border colors
-            document.querySelectorAll('.border-gray-800').forEach(el => {
-                el.classList.remove('border-gray-800');
-                el.classList.add('border-gray-200');
-            });
-            
-            // Update text colors
-            document.querySelectorAll('.text-white').forEach(el => {
-                if (!el.classList.contains('bg-blue-500') && 
-                    !el.closest('.bg-blue-500')) {
-                    el.classList.remove('text-white');
-                    el.classList.add('text-black');
-                }
-            });
-            
-            document.querySelectorAll('.text-gray-500').forEach(el => {
-                el.classList.remove('text-gray-500');
-                el.classList.add('text-gray-600');
-            });
-            
-            // Update hover states
-            document.querySelectorAll('.hover\\:bg-gray-900').forEach(el => {
-                el.classList.remove('hover:bg-gray-900');
-                el.classList.add('hover:bg-gray-100');
-            });
-            
-            document.querySelectorAll('.hover\\:bg-gray-800').forEach(el => {
-                el.classList.remove('hover:bg-gray-800');
-                el.classList.add('hover:bg-gray-200');
-            });
-        } else {
-            htmlElement.classList.add('dark');
-            htmlElement.classList.remove('light');
-            document.body.style.backgroundColor = '#000000';
-            document.body.style.color = '#ffffff';
-            
-            // Update icon visibility
-            document.querySelectorAll('.light-only').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.dark-only').forEach(el => el.classList.remove('hidden'));
-            
-            // Update background colors
-            document.querySelectorAll('.bg-white').forEach(el => {
-                el.classList.remove('bg-white');
-                el.classList.add('bg-black');
-            });
-            
-            document.querySelectorAll('.bg-gray-100').forEach(el => {
-                el.classList.remove('bg-gray-100');
-                el.classList.add('bg-gray-900');
-            });
-            
-            document.querySelectorAll('.bg-gray-200').forEach(el => {
-                el.classList.remove('bg-gray-200');
-                el.classList.add('bg-gray-800');
-            });
-            
-            // Update border colors
-            document.querySelectorAll('.border-gray-200').forEach(el => {
-                el.classList.remove('border-gray-200');
-                el.classList.add('border-gray-800');
-            });
-            
-            // Update text colors
-            document.querySelectorAll('.text-black').forEach(el => {
-                if (!el.classList.contains('bg-white') && 
-                    !el.closest('.bg-white')) {
-                    el.classList.remove('text-black');
-                    el.classList.add('text-white');
-                }
-            });
-            
-            document.querySelectorAll('.text-gray-600').forEach(el => {
-                el.classList.remove('text-gray-600');
-                el.classList.add('text-gray-500');
-            });
-            
-            // Update hover states
-            document.querySelectorAll('.hover\\:bg-gray-100').forEach(el => {
-                el.classList.remove('hover:bg-gray-100');
-                el.classList.add('hover:bg-gray-900');
-            });
-            
-            document.querySelectorAll('.hover\\:bg-gray-200').forEach(el => {
-                el.classList.remove('hover:bg-gray-200');
-                el.classList.add('hover:bg-gray-800');
-            });
-        }
-    }
-    
-    // Apply theme on page load
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    applyTheme(savedTheme);
-    
+
     if (themeToggle) {
         themeToggle.addEventListener('click', function() {
-            const newTheme = htmlElement.classList.contains('dark') ? 'light' : 'dark';
-            localStorage.setItem('theme', newTheme);
-            applyTheme(newTheme);
-            
-            // Close dropdown
-            if (moreDropdown) {
-                moreDropdown.classList.add('hidden');
-            }
+            // Toggle dark class on the HTML element
+            document.documentElement.classList.toggle('dark');
+
+            // Toggle visibility of dark/light mode icons and text
+            const darkElements = document.querySelectorAll('.dark-only');
+            const lightElements = document.querySelectorAll('.light-only');
+
+            darkElements.forEach(el => el.classList.toggle('hidden'));
+            lightElements.forEach(el => el.classList.toggle('hidden'));
+
+            // Store preference in localStorage
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
         });
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('darkMode');
+        if (savedTheme === 'disabled') {
+            document.documentElement.classList.remove('dark');
+            document.querySelectorAll('.dark-only').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.light-only').forEach(el => el.classList.remove('hidden'));
+        }
     }
-    
-    // Compose tweet modal
-    const composeButton = document.getElementById('compose-tweet');
-    const composeModal = document.getElementById('compose-modal');
-    const closeComposeButton = document.getElementById('close-compose');
-    
-    if (composeButton && composeModal && closeComposeButton) {
-        composeButton.addEventListener('click', function() {
-            composeModal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        });
-        
-        closeComposeButton.addEventListener('click', function() {
-            composeModal.classList.add('hidden');
-            document.body.style.overflow = '';
-        });
-        
-        // Close modal when clicking outside
-        composeModal.addEventListener('click', function(event) {
-            if (event.target === composeModal) {
-                composeModal.classList.add('hidden');
-                document.body.style.overflow = '';
-            }
-        });
-    }
-    
-    // Add event listeners to tweet actions
+
+    // Add event listeners to tweet actions with AJAX
     const likeButtons = document.querySelectorAll('.tweet-action.like');
     likeButtons.forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function(e) {
+            // If inside a form, prevent default form submission
+            if (button.closest('form')) {
+                e.preventDefault();
+            }
+
             const icon = button.querySelector('i');
             const counter = button.querySelector('span');
-            
-            if (icon.classList.contains('fa-regular')) {
-                icon.classList.remove('fa-regular');
-                icon.classList.add('fa-solid');
-                button.classList.add('text-red-500');
-                counter.textContent = (parseInt(counter.textContent.replace(',', '')) + 1).toLocaleString();
+            const tweetId = button.closest('form') ? button.closest('form').action.split('/').slice(-2)[0] : null;
+
+            if (tweetId) {
+                // Send AJAX request
+                fetch(`/tweets/${tweetId}/like`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Update UI based on response
+                    if (data.liked) {
+                        icon.classList.remove('fa-regular');
+                        icon.classList.add('fa-solid');
+                        button.classList.add('text-red-500');
+                    } else {
+                        icon.classList.remove('fa-solid');
+                        icon.classList.add('fa-regular');
+                        button.classList.remove('text-red-500');
+                    }
+                    counter.textContent = data.likes;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
             } else {
-                icon.classList.remove('fa-solid');
-                icon.classList.add('fa-regular');
-                button.classList.remove('text-red-500');
-                counter.textContent = (parseInt(counter.textContent.replace(',', '')) - 1).toLocaleString();
+                // Fallback for static demo
+                if (icon.classList.contains('fa-regular')) {
+                    icon.classList.remove('fa-regular');
+                    icon.classList.add('fa-solid');
+                    button.classList.add('text-red-500');
+                    counter.textContent = (parseInt(counter.textContent.replace(',', '')) + 1).toLocaleString();
+                } else {
+                    icon.classList.remove('fa-solid');
+                    icon.classList.add('fa-regular');
+                    button.classList.remove('text-red-500');
+                    counter.textContent = (parseInt(counter.textContent.replace(',', '')) - 1).toLocaleString();
+                }
             }
         });
     });
-    
-    // Retweet buttons
+
+    // Retweet buttons with AJAX
     const retweetButtons = document.querySelectorAll('.tweet-action.retweet');
     retweetButtons.forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function(e) {
+            // If inside a form, prevent default form submission
+            if (button.closest('form')) {
+                e.preventDefault();
+            }
+
             const counter = button.querySelector('span');
-            
-            if (button.classList.contains('text-green-500')) {
-                button.classList.remove('text-green-500');
-                counter.textContent = (parseInt(counter.textContent.replace(',', '')) - 1).toLocaleString();
+            const tweetId = button.closest('form') ? button.closest('form').action.split('/').slice(-2)[0] : null;
+
+            if (tweetId) {
+                // Send AJAX request
+                fetch(`/tweets/${tweetId}/retweet`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Update UI based on response
+                    if (data.retweeted) {
+                        button.classList.add('text-green-500');
+                    } else {
+                        button.classList.remove('text-green-500');
+                    }
+                    counter.textContent = data.retweets;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
             } else {
-                button.classList.add('text-green-500');
-                counter.textContent = (parseInt(counter.textContent.replace(',', '')) + 1).toLocaleString();
+                // Fallback for static demo
+                if (button.classList.contains('text-green-500')) {
+                    button.classList.remove('text-green-500');
+                    counter.textContent = (parseInt(counter.textContent.replace(',', '')) - 1).toLocaleString();
+                } else {
+                    button.classList.add('text-green-500');
+                    counter.textContent = (parseInt(counter.textContent.replace(',', '')) + 1).toLocaleString();
+                }
             }
         });
     });
-    
+
     // Improved tab switching in profile page with history API
     const profileTabs = document.querySelectorAll('.profile-tabs a');
     if (profileTabs.length > 0) {
@@ -224,22 +178,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Let the browser handle the actual navigation
                 // The server will render the appropriate tab content
                 // No need to prevent default or manipulate history manually
-                
+
                 // Optional: Add smooth scrolling to top
                 window.scrollTo({
                     top: 0,
                     behavior: 'smooth'
                 });
             });
-        });
-    }
-
-    // Mobile compose tweet button
-    const mobileComposeButton = document.getElementById('compose-tweet-mobile');
-    if (mobileComposeButton && composeModal) {
-        mobileComposeButton.addEventListener('click', function() {
-            composeModal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
         });
     }
 
@@ -257,4 +202,95 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Fix for iOS Safari address bar height changes
     window.addEventListener('orientationchange', setMobileHeight);
-}); 
+
+    // Handle image loading
+    const images = document.querySelectorAll('img');
+    images.forEach(img => {
+        // Add loading class to show loading state
+        img.classList.add('loading');
+
+        img.addEventListener('load', function() {
+            // Remove loading class when loaded
+            img.classList.remove('loading');
+        });
+
+        img.addEventListener('error', function() {
+            // On error, replace with placeholder
+            img.src = 'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png';
+            img.classList.remove('loading');
+
+            // If it's a profile image, add a specific class
+            if (img.classList.contains('rounded-full')) {
+                img.classList.add('profile-image');
+            }
+        });
+    });
+
+    // Socket.io real-time functionality
+    if (typeof io !== 'undefined') {
+        // Connect to Socket.io server
+        const socket = io();
+
+        // Handle real-time notifications
+        socket.on('notification', function(data) {
+            // Update notification badge
+            const notificationBadge = document.querySelector('.notification-badge');
+            if (notificationBadge) {
+                notificationBadge.style.display = 'flex';
+            }
+
+            // Show toast notification (optional)
+            showToast(`New notification from ${data.notification.sender.name}`);
+        });
+
+        // Handle real-time messages
+        socket.on('messageNotification', function(data) {
+            // Update message badge
+            const messageBadge = document.querySelector('.message-badge');
+            if (messageBadge) {
+                messageBadge.style.display = 'flex';
+            }
+
+            // Show toast notification (optional)
+            showToast(`New message from ${data.user.name}`);
+        });
+
+        // Handle new messages in conversation
+        socket.on('newMessage', function(data) {
+            const messagesContainer = document.getElementById('messages-container');
+            if (messagesContainer) {
+                // Create new message element
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${data.message.sender === currentUserId ? 'flex justify-end' : ''}`;
+
+                // Add message content
+                // ... (message HTML structure)
+
+                // Append to container and scroll to bottom
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        });
+    }
+
+    // Simple toast notification function
+    function showToast(message) {
+        // Create toast element if it doesn't exist
+        let toast = document.getElementById('toast-notification');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'toast-notification';
+            toast.className = 'fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg transform transition-transform duration-300 translate-y-full opacity-0';
+            document.body.appendChild(toast);
+        }
+
+        // Set message and show toast
+        toast.textContent = message;
+        toast.classList.remove('translate-y-full', 'opacity-0');
+
+        // Hide toast after 3 seconds
+        setTimeout(() => {
+            toast.classList.add('translate-y-full', 'opacity-0');
+        }, 3000);
+    }
+});

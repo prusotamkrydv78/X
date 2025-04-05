@@ -1,0 +1,189 @@
+<!-- Header -->
+<header class="sticky top-0 bg-black bg-opacity-80 backdrop-blur-md z-10 p-4 border-b border-gray-800">
+    <div class="flex items-center">
+        <a href="javascript:history.back()" class="mr-4 p-2 rounded-full hover:bg-gray-800">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <h1 class="text-xl font-bold">Post</h1>
+    </div>
+</header>
+
+<!-- Main tweet -->
+<div class="p-4 border-b border-gray-800">
+    <div class="flex">
+        <a href="/users/<%= tweet.user.username %>" class="flex-shrink-0">
+            <img src="<%= tweet.user.profileImage %>" alt="<%= tweet.user.name %>" class="w-12 h-12 rounded-full mr-3 object-cover">
+        </a>
+        <div class="flex-1">
+            <div class="flex items-center flex-wrap">
+                <a href="/users/<%= tweet.user.username %>" class="font-bold hover:underline mr-1"><%= tweet.user.name %></a>
+                <% if (tweet.user.isVerified) { %>
+                    <i class="fa-solid fa-circle-check text-blue-500 text-sm mr-1"></i>
+                <% } %>
+                <span class="text-gray-500 text-sm">@<%= tweet.user.username %></span>
+                <div class="ml-auto">
+                    <button class="text-gray-500 hover:text-blue-500 p-1 hover:bg-blue-500/10 rounded-full">
+                        <i class="fa-solid fa-ellipsis"></i>
+                    </button>
+                </div>
+            </div>
+
+            <p class="mt-2 mb-3 text-lg"><%= tweet.content %></p>
+
+            <% if (tweet.media && tweet.media.length > 0) { %>
+                <div class="mb-3 rounded-xl overflow-hidden <%= tweet.media.length > 1 ? 'grid grid-cols-2 gap-1' : '' %>">
+                    <% tweet.media.forEach(mediaUrl => { %>
+                        <img src="<%= mediaUrl %>" alt="Tweet media" class="w-full object-cover max-h-96">
+                    <% }); %>
+                </div>
+            <% } %>
+
+            <div class="text-gray-500 mb-3">
+                <%= new Date(tweet.createdAt).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }) %> ·
+                <%= new Date(tweet.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %> ·
+                <span class="text-blue-500">X Web</span>
+            </div>
+
+            <% if (tweet.likes.length > 0 || tweet.retweets.length > 0) { %>
+                <div class="flex border-t border-b border-gray-800 py-3 mb-3">
+                    <% if (tweet.retweets.length > 0) { %>
+                        <div class="mr-4">
+                            <span class="font-bold"><%= tweet.retweets.length %></span>
+                            <span class="text-gray-500">Reposts</span>
+                        </div>
+                    <% } %>
+                    <% if (tweet.likes.length > 0) { %>
+                        <div>
+                            <span class="font-bold"><%= tweet.likes.length %></span>
+                            <span class="text-gray-500">Likes</span>
+                        </div>
+                    <% } %>
+                </div>
+            <% } %>
+
+            <!-- Tweet actions -->
+            <div class="flex justify-between text-gray-500 border-t border-gray-800 pt-3">
+                <button class="tweet-action reply flex items-center hover:text-blue-500">
+                    <i class="fa-regular fa-comment mr-2"></i>
+                    <span><%= tweet.replies ? tweet.replies.length : 0 %></span>
+                </button>
+
+                <form action="/tweets/<%= tweet._id %>/retweet" method="POST" class="inline">
+                    <button type="submit" class="tweet-action retweet flex items-center hover:text-green-500 <%= tweet.retweets.includes(req.user?._id) ? 'text-green-500' : '' %>">
+                        <i class="fa-solid fa-retweet mr-2"></i>
+                        <span><%= tweet.retweets.length %></span>
+                    </button>
+                </form>
+
+                <form action="/tweets/<%= tweet._id %>/like" method="POST" class="inline">
+                    <button type="submit" class="tweet-action like flex items-center hover:text-red-500 <%= tweet.likes.includes(req.user?._id) ? 'text-red-500' : '' %>">
+                        <i class="<%= tweet.likes.includes(req.user?._id) ? 'fa-solid' : 'fa-regular' %> fa-heart mr-2"></i>
+                        <span><%= tweet.likes.length %></span>
+                    </button>
+                </form>
+
+                <button class="tweet-action share flex items-center hover:text-blue-500">
+                    <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reply form -->
+<% if (req.isAuthenticated && req.isAuthenticated()) { %>
+    <div class="p-4 border-b border-gray-800">
+        <form action="/tweets/<%= tweet._id %>/reply" method="POST" enctype="multipart/form-data">
+            <div class="flex">
+                <img src="<%= req.user.profileImage %>" alt="Your profile" class="w-12 h-12 rounded-full mr-3 object-cover">
+                <div class="flex-1">
+                    <textarea name="content" placeholder="Post your reply" class="w-full bg-transparent text-xl outline-none resize-none h-24 placeholder-gray-500" required></textarea>
+
+                    <div class="flex justify-between items-center mt-3">
+                        <div class="flex">
+                            <label class="cursor-pointer p-2 text-blue-500 hover:bg-blue-500/10 rounded-full">
+                                <i class="fa-regular fa-image"></i>
+                                <input type="file" name="media" multiple class="hidden" accept="image/*">
+                            </label>
+                            <button type="button" class="p-2 text-blue-500 hover:bg-blue-500/10 rounded-full">
+                                <i class="fa-regular fa-face-smile"></i>
+                            </button>
+                        </div>
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-4 py-2 font-bold">
+                            Reply
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+<% } %>
+
+<!-- Replies -->
+<% if (tweet.replies && tweet.replies.length > 0) { %>
+    <div class="border-t border-gray-800">
+        <h3 class="p-4 font-bold">Replies</h3>
+
+        <% tweet.replies.forEach(reply => { %>
+            <div class="p-4 border-b border-gray-800 hover:bg-gray-900/30 transition-colors">
+                <div class="flex">
+                    <a href="/users/<%= reply.user.username %>" class="flex-shrink-0">
+                        <img src="<%= reply.user.profileImage %>" alt="<%= reply.user.name %>" class="w-12 h-12 rounded-full mr-3 object-cover">
+                    </a>
+                    <div class="flex-1">
+                        <div class="flex items-center flex-wrap">
+                            <a href="/users/<%= reply.user.username %>" class="font-bold hover:underline mr-1"><%= reply.user.name %></a>
+                            <% if (reply.user.isVerified) { %>
+                                <i class="fa-solid fa-circle-check text-blue-500 text-sm mr-1"></i>
+                            <% } %>
+                            <span class="text-gray-500 text-sm">@<%= reply.user.username %> · <%= timeAgo(reply.createdAt) %></span>
+                            <div class="ml-auto">
+                                <button class="text-gray-500 hover:text-blue-500 p-1 hover:bg-blue-500/10 rounded-full">
+                                    <i class="fa-solid fa-ellipsis"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <p class="mt-2 mb-3"><%= reply.content %></p>
+
+                        <% if (reply.media && reply.media.length > 0) { %>
+                            <div class="mb-3 rounded-xl overflow-hidden <%= reply.media.length > 1 ? 'grid grid-cols-2 gap-1' : '' %>">
+                                <% reply.media.forEach(mediaUrl => { %>
+                                    <img src="<%= mediaUrl %>" alt="Reply media" class="w-full object-cover max-h-96">
+                                <% }); %>
+                            </div>
+                        <% } %>
+
+                        <!-- Reply actions -->
+                        <div class="flex justify-between text-gray-500 mt-3">
+                            <button class="tweet-action reply flex items-center hover:text-blue-500">
+                                <i class="fa-regular fa-comment mr-2"></i>
+                                <span><%= reply.replies ? reply.replies.length : 0 %></span>
+                            </button>
+
+                            <form action="/tweets/<%= reply._id %>/retweet" method="POST" class="inline">
+                                <button type="submit" class="tweet-action retweet flex items-center hover:text-green-500 <%= reply.retweets.includes(req.user?._id) ? 'text-green-500' : '' %>">
+                                    <i class="fa-solid fa-retweet mr-2"></i>
+                                    <span><%= reply.retweets.length %></span>
+                                </button>
+                            </form>
+
+                            <form action="/tweets/<%= reply._id %>/like" method="POST" class="inline">
+                                <button type="submit" class="tweet-action like flex items-center hover:text-red-500 <%= reply.likes.includes(req.user?._id) ? 'text-red-500' : '' %>">
+                                    <i class="<%= reply.likes.includes(req.user?._id) ? 'fa-solid' : 'fa-regular' %> fa-heart mr-2"></i>
+                                    <span><%= reply.likes.length %></span>
+                                </button>
+                            </form>
+
+                            <button class="tweet-action share flex items-center hover:text-blue-500">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+<% } %>
+
+

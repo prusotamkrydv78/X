@@ -11,73 +11,89 @@
     </div>
 </header>
 
-<!-- Notifications with static data -->
+<!-- Notifications -->
 <div class="pb-16">
-    <% if (!req.query.filter || req.query.filter === 'all') { %>
-        <!-- All notifications -->
-        <div class="border-b border-gray-800 p-4 hover:bg-gray-900 transition-colors">
-            <div class="flex mb-2">
-                <div class="w-10 text-blue-500 flex justify-center">
-                    <i class="fa-solid fa-user-plus text-lg"></i>
+    <% if (notifications && notifications.length > 0) { %>
+        <%
+        // Filter notifications based on query parameter
+        let filteredNotifications = notifications;
+
+        if (req.query.filter === 'verified') {
+            filteredNotifications = notifications.filter(notification =>
+                notification.sender.isVerified
+            );
+        } else if (req.query.filter === 'mentions') {
+            filteredNotifications = notifications.filter(notification =>
+                notification.type === 'mention'
+            );
+        }
+        %>
+
+        <% if (filteredNotifications.length > 0) { %>
+            <% filteredNotifications.forEach(notification => { %>
+                <div class="border-b border-gray-800 p-4 hover:bg-gray-900 transition-colors">
+                    <div class="flex mb-2">
+                        <div class="w-10 flex justify-center">
+                            <% if (notification.type === 'follow') { %>
+                                <i class="fa-solid fa-user-plus text-blue-500 text-lg"></i>
+                            <% } else if (notification.type === 'like') { %>
+                                <i class="fa-solid fa-heart text-red-500 text-lg"></i>
+                            <% } else if (notification.type === 'retweet') { %>
+                                <i class="fa-solid fa-retweet text-green-500 text-lg"></i>
+                            <% } else if (notification.type === 'mention') { %>
+                                <i class="fa-solid fa-at text-blue-500 text-lg"></i>
+                            <% } else if (notification.type === 'reply') { %>
+                                <i class="fa-solid fa-reply text-blue-500 text-lg"></i>
+                            <% } %>
+                        </div>
+                        <div class="ml-2">
+                            <a href="/users/<%= notification.sender.username %>">
+                                <img src="<%= notification.sender.profileImage %>" alt="<%= notification.sender.name %>" class="w-12 h-12 rounded-full object-cover">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ml-12">
+                        <p>
+                            <a href="/users/<%= notification.sender.username %>" class="font-bold hover:underline">
+                                <%= notification.sender.name %>
+                            </a>
+                            <% if (notification.sender.isVerified) { %>
+                                <i class="fa-solid fa-circle-check text-blue-500 text-sm ml-1"></i>
+                            <% } %>
+
+                            <% if (notification.type === 'follow') { %>
+                                followed you
+                            <% } else if (notification.type === 'like') { %>
+                                liked your post
+                            <% } else if (notification.type === 'retweet') { %>
+                                reposted your post
+                            <% } else if (notification.type === 'mention') { %>
+                                mentioned you
+                            <% } else if (notification.type === 'reply') { %>
+                                replied to your post
+                            <% } %>
+                        </p>
+
+                        <% if (notification.tweet) { %>
+                            <a href="/tweets/<%= notification.tweet._id %>" class="block text-gray-500 mt-1 p-3 border-l-4 border-gray-800 hover:bg-gray-800 transition-colors">
+                                "<%= notification.tweet.content.length > 100 ? notification.tweet.content.substring(0, 100) + '...' : notification.tweet.content %>"
+                            </a>
+                        <% } %>
+
+                        <p class="text-gray-500 text-sm"><%= timeAgo(notification.createdAt) %></p>
+                    </div>
                 </div>
-                <div class="ml-2">
-                    <img src="https://pbs.twimg.com/profile_images/1683325380441128960/yRsRRjGO_400x400.jpg" alt="Profile" class="w-12 h-12 rounded-full">
+            <% }); %>
+        <% } else { %>
+            <!-- Empty state for filtered notifications -->
+            <div class="flex flex-col items-center justify-center p-8 text-center">
+                <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mb-4">
+                    <i class="fa-regular fa-bell text-2xl"></i>
                 </div>
+                <h2 class="text-2xl font-bold mb-2">No <%= req.query.filter %> notifications</h2>
+                <p class="text-gray-500 max-w-sm">When you have <%= req.query.filter %> notifications, they'll appear here.</p>
             </div>
-            <div class="ml-12">
-                <p><span class="font-bold hover:underline cursor-pointer">TechGuru</span> followed you</p>
-                <p class="text-gray-500 text-sm">2h</p>
-            </div>
-        </div>
-        
-        <div class="border-b border-gray-800 p-4 hover:bg-gray-900 transition-colors">
-            <div class="flex mb-2">
-                <div class="w-10 text-green-500 flex justify-center">
-                    <i class="fa-solid fa-retweet text-lg"></i>
-                </div>
-                <div class="ml-2">
-                    <img src="https://pbs.twimg.com/profile_images/1683325380441128960/yRsRRjGO_400x400.jpg" alt="Profile" class="w-12 h-12 rounded-full">
-                </div>
-            </div>
-            <div class="ml-12">
-                <p><span class="font-bold hover:underline cursor-pointer">CodeMaster</span> reposted your post</p>
-                <p class="text-gray-500 mt-1 p-3 border-l-4 border-gray-800">"Just deployed my first React app using Next.js! #webdev #reactjs"</p>
-                <p class="text-gray-500 text-sm">5h</p>
-            </div>
-        </div>
-    <% } else if (req.query.filter === 'verified') { %>
-        <!-- Verified notifications -->
-        <div class="border-b border-gray-800 p-4 hover:bg-gray-900 transition-colors">
-            <div class="flex mb-2">
-                <div class="w-10 text-blue-500 flex justify-center">
-                    <i class="fa-solid fa-user-plus text-lg"></i>
-                </div>
-                <div class="ml-2">
-                    <img src="https://pbs.twimg.com/profile_images/1683325380441128960/yRsRRjGO_400x400.jpg" alt="Profile" class="w-12 h-12 rounded-full">
-                </div>
-            </div>
-            <div class="ml-12">
-                <p><span class="font-bold hover:underline cursor-pointer">TechGuru</span> <i class="fa-solid fa-circle-check text-blue-500"></i> followed you</p>
-                <p class="text-gray-500 text-sm">2h</p>
-            </div>
-        </div>
-    <% } else if (req.query.filter === 'mentions') { %>
-        <!-- Mentions notifications -->
-        <div class="border-b border-gray-800 p-4 hover:bg-gray-900 transition-colors">
-            <div class="flex mb-2">
-                <div class="w-10 text-blue-500 flex justify-center">
-                    <i class="fa-solid fa-at text-lg"></i>
-                </div>
-                <div class="ml-2">
-                    <img src="https://pbs.twimg.com/profile_images/1683325380441128960/yRsRRjGO_400x400.jpg" alt="Profile" class="w-12 h-12 rounded-full">
-                </div>
-            </div>
-            <div class="ml-12">
-                <p><span class="font-bold hover:underline cursor-pointer">WebDeveloper</span> mentioned you</p>
-                <p class="text-gray-500 mt-1 p-3 border-l-4 border-gray-800">"Hey @username, what do you think about the new React 18 features?"</p>
-                <p class="text-gray-500 text-sm">3h</p>
-            </div>
-        </div>
+        <% } %>
     <% } else { %>
         <!-- Empty state -->
         <div class="flex flex-col items-center justify-center p-8 text-center">
@@ -88,4 +104,38 @@
             <p class="text-gray-500 max-w-sm">When there's new notifications, we'll let you know.</p>
         </div>
     <% } %>
-</div> 
+</div>
+
+<script>
+    // Mark all notifications as read
+    fetch('/notifications/read/all', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    // Update notification badge in the sidebar
+    if (window.parent.document.querySelector('.notification-badge')) {
+        window.parent.document.querySelector('.notification-badge').style.display = 'none';
+    }
+
+    // Socket.io for real-time notifications
+    const socket = io();
+
+    // Join user's notification room
+    <% if (req.user) { %>
+        socket.emit('join', '<%= req.user._id %>');
+    <% } %>
+
+    // Listen for new notifications
+    socket.on('notification', function(data) {
+        // Show notification indicator
+        if (window.parent.document.querySelector('.notification-badge')) {
+            window.parent.document.querySelector('.notification-badge').style.display = 'flex';
+        }
+
+        // Optionally show a toast notification
+        // This would require adding a toast notification library
+    });
+</script>

@@ -7,19 +7,25 @@
         </svg>
         <h1 class="text-3xl font-bold">Sign in to X</h1>
     </div>
-    
-    <form class="space-y-4">
+
+    <% if (error) { %>
+        <div class="bg-red-500 bg-opacity-20 border border-red-500 text-red-500 p-3 rounded-md mb-4">
+            <%= error %>
+        </div>
+    <% } %>
+
+    <form class="space-y-4" action="/login" method="POST">
         <div>
-            <input type="text" placeholder="Phone, email, or username" class="w-full bg-black border border-gray-800 rounded-md p-4 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+            <input type="email" name="email" placeholder="Email" required class="w-full bg-black border border-gray-800 rounded-md p-4 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
         </div>
         <div>
-            <input type="password" placeholder="Password" class="w-full bg-black border border-gray-800 rounded-md p-4 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+            <input type="password" name="password" placeholder="Password" required class="w-full bg-black border border-gray-800 rounded-md p-4 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
         </div>
         <button type="submit" class="w-full bg-white text-black rounded-full p-3 font-bold hover:bg-gray-200">Log in</button>
     </form>
-    
+
     <div class="flex justify-between text-sm mt-4">
         <a href="#" class="text-blue-500 hover:underline">Forgot password?</a>
         <span>Don't have an account? <a href="/signup" class="text-blue-500 hover:underline">Sign up</a></span>
     </div>
-</div> 
+</div>
