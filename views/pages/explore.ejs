@@ -1,0 +1,117 @@
+<!-- Header -->
+<header class="sticky top-0 bg-black bg-opacity-80 backdrop-blur-md z-10 p-4 border-b border-gray-800">
+    <div class="relative mb-4">
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-500"></i>
+        <input type="text" placeholder="Search" class="w-full bg-gray-900 rounded-full py-2 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-blue-500">
+    </div>
+    
+    <div class="flex overflow-x-auto pb-2 gap-4 tab-container">
+        <a href="/explore?tab=for-you" class="flex-shrink-0 px-4 py-2 <%= !req.query.tab || req.query.tab === 'for-you' ? 'bg-blue-500' : 'bg-gray-900' %> rounded-full">For you</a>
+        <a href="/explore?tab=trending" class="flex-shrink-0 px-4 py-2 <%= req.query.tab === 'trending' ? 'bg-blue-500' : 'bg-gray-900' %> rounded-full">Trending</a>
+        <a href="/explore?tab=news" class="flex-shrink-0 px-4 py-2 <%= req.query.tab === 'news' ? 'bg-blue-500' : 'bg-gray-900' %> rounded-full">News</a>
+        <a href="/explore?tab=sports" class="flex-shrink-0 px-4 py-2 <%= req.query.tab === 'sports' ? 'bg-blue-500' : 'bg-gray-900' %> rounded-full">Sports</a>
+        <a href="/explore?tab=entertainment" class="flex-shrink-0 px-4 py-2 <%= req.query.tab === 'entertainment' ? 'bg-blue-500' : 'bg-gray-900' %> rounded-full">Entertainment</a>
+    </div>
+</header>
+
+<!-- Trends -->
+<div class="pb-16">
+    <div class="p-4 border-b border-gray-800">
+        <h2 class="text-xl font-bold mb-2">Trends for you</h2>
+    </div>
+    
+    <% if (!req.query.tab || req.query.tab === 'for-you') { %>
+        <!-- For You tab trends -->
+        <div class="p-4 border-b border-gray-800 hover:bg-gray-900 transition-colors">
+            <p class="text-gray-500 text-sm">Trending in Technology</p>
+            <p class="font-bold">#WebDevelopment</p>
+            <p class="text-gray-500 text-sm">125K posts</p>
+        </div>
+        <div class="p-4 border-b border-gray-800 hover:bg-gray-900 transition-colors">
+            <p class="text-gray-500 text-sm">Trending in Programming</p>
+            <p class="font-bold">#JavaScript</p>
+            <p class="text-gray-500 text-sm">98.5K posts</p>
+        </div>
+        <div class="p-4 border-b border-gray-800 hover:bg-gray-900 transition-colors">
+            <p class="text-gray-500 text-sm">Trending in Business</p>
+            <p class="font-bold">#Startup</p>
+            <p class="text-gray-500 text-sm">42.5K posts</p>
+        </div>
+    <% } else if (req.query.tab === 'trending') { %>
+        <!-- Trending tab trends -->
+        <div class="p-4 border-b border-gray-800 hover:bg-gray-900 transition-colors">
+            <p class="text-gray-500 text-sm">Trending Worldwide</p>
+            <p class="font-bold">#WorldCup</p>
+            <p class="text-gray-500 text-sm">325K posts</p>
+        </div>
+        <div class="p-4 border-b border-gray-800 hover:bg-gray-900 transition-colors">
+            <p class="text-gray-500 text-sm">Trending Worldwide</p>
+            <p class="font-bold">#ClimateAction</p>
+            <p class="text-gray-500 text-sm">218K posts</p>
+        </div>
+        <div class="p-4 border-b border-gray-800 hover:bg-gray-900 transition-colors">
+            <p class="text-gray-500 text-sm">Trending Worldwide</p>
+            <p class="font-bold">#CyberMonday</p>
+            <p class="text-gray-500 text-sm">185K posts</p>
+        </div>
+    <% } else if (req.query.tab === 'news') { %>
+        <!-- News tab trends -->
+        <div class="p-4 border-b border-gray-800 hover:bg-gray-900 transition-colors">
+            <p class="text-gray-500 text-sm">Politics</p>
+            <p class="font-bold">#Election2024</p>
+            <p class="text-gray-500 text-sm">512K posts</p>
+        </div>
+        <div class="p-4 border-b border-gray-800 hover:bg-gray-900 transition-colors">
+            <p class="text-gray-500 text-sm">Business</p>
+            <p class="font-bold">#StockMarket</p>
+            <p class="text-gray-500 text-sm">112K posts</p>
+        </div>
+        <div class="p-4 border-b border-gray-800 hover:bg-gray-900 transition-colors">
+            <p class="text-gray-500 text-sm">Technology</p>
+            <p class="font-bold">#AppleEvent</p>
+            <p class="text-gray-500 text-sm">95K posts</p>
+        </div>
+    <% } else if (req.query.tab === 'sports') { %>
+        <!-- Sports tab trends -->
+        <div class="p-4 border-b border-gray-800 hover:bg-gray-900 transition-colors">
+            <p class="text-gray-500 text-sm">Football</p>
+            <p class="font-bold">#ChampionsLeague</p>
+            <p class="text-gray-500 text-sm">423K posts</p>
+        </div>
+        <div class="p-4 border-b border-gray-800 hover:bg-gray-900 transition-colors">
+            <p class="text-gray-500 text-sm">Basketball</p>
+            <p class="font-bold">#NBA</p>
+            <p class="text-gray-500 text-sm">315K posts</p>
+        </div>
+        <div class="p-4 border-b border-gray-800 hover:bg-gray-900 transition-colors">
+            <p class="text-gray-500 text-sm">Cricket</p>
+            <p class="font-bold">#IPL</p>
+            <p class="text-gray-500 text-sm">286K posts</p>
+        </div>
+    <% } else if (req.query.tab === 'entertainment') { %>
+        <!-- Entertainment tab trends -->
+        <div class="p-4 border-b border-gray-800 hover:bg-gray-900 transition-colors">
+            <p class="text-gray-500 text-sm">Movies</p>
+            <p class="font-bold">#Oscars</p>
+            <p class="text-gray-500 text-sm">354K posts</p>
+        </div>
+        <div class="p-4 border-b border-gray-800 hover:bg-gray-900 transition-colors">
+            <p class="text-gray-500 text-sm">Music</p>
+            <p class="font-bold">#Grammys</p>
+            <p class="text-gray-500 text-sm">298K posts</p>
+        </div>
+        <div class="p-4 border-b border-gray-800 hover:bg-gray-900 transition-colors">
+            <p class="text-gray-500 text-sm">TV Shows</p>
+            <p class="font-bold">#Succession</p>
+            <p class="text-gray-500 text-sm">176K posts</p>
+        </div>
+    <% } else { %>
+        <div class="p-4 text-center text-gray-500">
+            No trends available right now
+        </div>
+    <% } %>
+    
+    <div class="p-4 text-center">
+        <a href="#" class="text-blue-500 hover:underline">Show more</a>
+    </div>
+</div> 

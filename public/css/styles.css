@@ -1,0 +1,388 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #0f1419;
+}
+::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #444;
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+    .tweet-content img, .tweet-content video {
+        border-radius: 12px;
+    }
+    .profile-info {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+}
+
+/* Better tap targets for mobile */
+@media (max-width: 768px) {
+    .tweet-actions button {
+        padding: 8px;
+    }
+    
+    .mobile-nav a {
+        padding: 12px 0;
+    }
+}
+
+/* Tweet card styling */
+.tweet-card {
+    transition: background-color 0.2s ease;
+}
+
+.tweet-card:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.tweet-action {
+    transition: all 0.2s ease;
+    border-radius: 9999px;
+}
+
+.tweet-action:hover {
+    background-color: rgba(29, 155, 240, 0.1);
+}
+
+.tweet-action.like:hover {
+    color: rgb(249, 24, 128);
+    background-color: rgba(249, 24, 128, 0.1);
+}
+
+.tweet-action.retweet:hover {
+    color: rgb(0, 186, 124);
+    background-color: rgba(0, 186, 124, 0.1);
+}
+
+.tweet-image {
+    border-radius: 16px;
+    overflow: hidden;
+    transition: opacity 0.2s ease;
+}
+
+.tweet-image:hover {
+    opacity: 0.9;
+}
+
+/* Loading animations */
+@keyframes shimmer {
+    0% {
+        background-position: -468px 0;
+    }
+    100% {
+        background-position: 468px 0;
+    }
+}
+
+.loading-skeleton {
+    background: linear-gradient(to right, #1a1a1a 8%, #2a2a2a 18%, #1a1a1a 33%);
+    background-size: 800px 104px;
+    animation: shimmer 1.5s linear infinite;
+    border-radius: 4px;
+}
+
+.tweet-loading {
+    padding: 16px;
+    border-bottom: 1px solid #333;
+}
+
+/* Accessibility */
+/* a:focus, button:focus, input:focus, textarea:focus {
+    outline: 2px solid #1d9bf0;
+    outline-offset: 2px;
+} */
+
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: #1d9bf0;
+    color: white;
+    padding: 8px;
+    z-index: 100;
+    transition: top 0.3s;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* Adding additional responsive styles */
+
+/* Extra small devices (phones, 640px and down) */
+@media (max-width: 640px) {
+    .profile-header {
+        height: 120px;
+    }
+    .profile-photo {
+        width: 80px;
+        height: 80px;
+    }
+    .profile-info {
+        margin-top: 40px;
+    }
+    .sidebar-text {
+        display: none;
+    }
+    .tweet-text {
+        font-size: 15px;
+    }
+    .tab-text {
+        font-size: 14px;
+    }
+}
+
+/* Small devices (tablets, 768px and down) */
+@media (max-width: 768px) {
+    .right-sidebar {
+        display: none;
+    }
+    .sidebar-wide {
+        display: none;
+    }
+    .mobile-sidebar {
+        display: block;
+    }
+    .main-content {
+        border-left: none;
+        border-right: none;
+    }
+    .post-button-text {
+        display: none;
+    }
+}
+
+/* Medium devices (landscape tablets, 992px and down) */
+@media (max-width: 992px) {
+    .trending-topic {
+        padding: 8px;
+    }
+    .tab-container {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
+
+/* Large devices (laptops/desktops, 1200px and down) */
+@media (max-width: 1200px) {
+    .sidebar-text {
+        font-size: 16px;
+    }
+}
+
+/* Dark and Light mode specific styles - IMPROVED */
+:root {
+    --bg-primary: #000000;
+    --bg-secondary: #15181c;
+    --bg-tertiary: #1c1f23;
+    --text-primary: #ffffff;
+    --text-secondary: #8899a6;
+    --border-color: #38444d;
+    --hover-bg: rgba(255, 255, 255, 0.1);
+}
+
+.light {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f7f9fa;
+    --bg-tertiary: #ebeef0;
+    --text-primary: #0f1419;
+    --text-secondary: #536471;
+    --border-color: #eff3f4;
+    --hover-bg: rgba(0, 0, 0, 0.1);
+}
+
+.dark-only {
+    display: block;
+}
+
+.light-only {
+    display: none;
+}
+
+.light .dark-only {
+    display: none;
+}
+
+.light .light-only {
+    display: block;
+}
+
+/* Apply theme variables */
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.bg-black, .light .bg-white {
+    background-color: var(--bg-primary);
+}
+
+.bg-gray-900, .light .bg-gray-100 {
+    background-color: var(--bg-secondary);
+}
+
+.bg-gray-800, .light .bg-gray-200 {
+    background-color: var(--bg-tertiary);
+}
+
+.border-gray-800, .light .border-gray-200 {
+    border-color: var(--border-color);
+}
+
+.text-gray-500, .light .text-gray-600 {
+    color: var(--text-secondary);
+}
+
+/* Hover effects */
+.hover\:bg-gray-900:hover, .light .hover\:bg-gray-100:hover {
+    background-color: var(--hover-bg);
+}
+
+.hover\:bg-gray-800:hover, .light .hover\:bg-gray-200:hover {
+    background-color: var(--hover-bg);
+}
+
+/* Touch targets for mobile */
+@media (max-width: 768px) {
+    .tweet-action {
+        padding: 10px;
+        margin: 0 5px;
+    }
+    
+    .mobile-nav a {
+        padding: 15px 0;
+    }
+    
+    .sidebar-icon {
+        font-size: 22px;
+    }
+}
+
+/* Add these improved mobile responsive styles to your styles.css */
+
+/* Base mobile styles */
+@media (max-width: 768px) {
+  /* Improve main layout */
+  .main-content {
+    width: 100%;
+    border-left: none !important;
+    border-right: none !important;
+  }
+  
+  /* Fix padding for mobile */
+  .p-4 {
+    padding: 0.75rem !important;
+  }
+  
+  /* Adjust font sizes for mobile */
+  h1, h2 {
+    font-size: 1.25rem !important;
+  }
+  
+  /* Ensure tweet cards are properly sized */
+  .tweet-card {
+    padding: 0.75rem !important;
+  }
+  
+  /* Improve mobile navigation */
+  .mobile-nav {
+    background-color: var(--bg-primary);
+    border-top: 1px solid var(--border-color);
+    padding: 0.5rem 0;
+    z-index: 50;
+  }
+  
+  .mobile-nav a {
+    padding: 0.75rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Fix profile page on mobile */
+  .profile-header {
+    height: auto !important;
+  }
+  
+  .profile-photo {
+    width: 80px !important;
+    height: 80px !important;
+  }
+  
+  /* Improve tab navigation on mobile */
+  .profile-tabs a, 
+  .border-b-4 {
+    font-size: 0.875rem !important;
+    padding: 0.75rem 0 !important;
+  }
+  
+  /* Fix compose tweet button on mobile */
+  #compose-tweet {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    z-index: 40;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Fix modal on mobile */
+  #compose-modal .bg-black {
+    width: 95% !important;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+
+/* Extra small devices (phones, 640px and down) */
+@media (max-width: 640px) {
+  /* Further reduce padding */
+  .p-4, .px-4, .py-4 {
+    padding: 0.5rem !important;
+  }
+  
+  /* Adjust tweet content */
+  .tweet-content img, 
+  .tweet-content video {
+    border-radius: 0.75rem !important;
+  }
+  
+  /* Fix profile page elements */
+  .profile-info {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+    margin-top: 2.5rem !important;
+  }
+  
+  /* Adjust text sizes */
+  .text-xl {
+    font-size: 1.125rem !important;
+  }
+  
+  .text-2xl {
+    font-size: 1.25rem !important;
+  }
+  
+  /* Fix grid layouts on mobile */
+  .grid {
+    grid-template-columns: 1fr !important;
+  }
+} 

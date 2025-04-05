@@ -1,0 +1,91 @@
+<!-- Header -->
+<header class="sticky top-0 bg-black bg-opacity-80 backdrop-blur-md z-10 p-4 border-b border-gray-800">
+    <div class="flex justify-between items-center mb-4">
+        <h1 class="text-xl font-bold">Notifications</h1>
+        <i class="fa-solid fa-gear"></i>
+    </div>
+    <div class="border-b border-gray-800 flex">
+        <a href="/notifications?filter=all" class="flex-1 text-center py-4 <%= !req.query.filter || req.query.filter === 'all' ? 'border-b-4 border-blue-500 font-bold' : 'text-gray-500' %> transition-colors hover:bg-gray-900">All</a>
+        <a href="/notifications?filter=verified" class="flex-1 text-center py-4 <%= req.query.filter === 'verified' ? 'border-b-4 border-blue-500 font-bold' : 'text-gray-500' %> hover:bg-gray-900 transition-colors">Verified</a>
+        <a href="/notifications?filter=mentions" class="flex-1 text-center py-4 <%= req.query.filter === 'mentions' ? 'border-b-4 border-blue-500 font-bold' : 'text-gray-500' %> hover:bg-gray-900 transition-colors">Mentions</a>
+    </div>
+</header>
+
+<!-- Notifications with static data -->
+<div class="pb-16">
+    <% if (!req.query.filter || req.query.filter === 'all') { %>
+        <!-- All notifications -->
+        <div class="border-b border-gray-800 p-4 hover:bg-gray-900 transition-colors">
+            <div class="flex mb-2">
+                <div class="w-10 text-blue-500 flex justify-center">
+                    <i class="fa-solid fa-user-plus text-lg"></i>
+                </div>
+                <div class="ml-2">
+                    <img src="https://pbs.twimg.com/profile_images/1683325380441128960/yRsRRjGO_400x400.jpg" alt="Profile" class="w-12 h-12 rounded-full">
+                </div>
+            </div>
+            <div class="ml-12">
+                <p><span class="font-bold hover:underline cursor-pointer">TechGuru</span> followed you</p>
+                <p class="text-gray-500 text-sm">2h</p>
+            </div>
+        </div>
+        
+        <div class="border-b border-gray-800 p-4 hover:bg-gray-900 transition-colors">
+            <div class="flex mb-2">
+                <div class="w-10 text-green-500 flex justify-center">
+                    <i class="fa-solid fa-retweet text-lg"></i>
+                </div>
+                <div class="ml-2">
+                    <img src="https://pbs.twimg.com/profile_images/1683325380441128960/yRsRRjGO_400x400.jpg" alt="Profile" class="w-12 h-12 rounded-full">
+                </div>
+            </div>
+            <div class="ml-12">
+                <p><span class="font-bold hover:underline cursor-pointer">CodeMaster</span> reposted your post</p>
+                <p class="text-gray-500 mt-1 p-3 border-l-4 border-gray-800">"Just deployed my first React app using Next.js! #webdev #reactjs"</p>
+                <p class="text-gray-500 text-sm">5h</p>
+            </div>
+        </div>
+    <% } else if (req.query.filter === 'verified') { %>
+        <!-- Verified notifications -->
+        <div class="border-b border-gray-800 p-4 hover:bg-gray-900 transition-colors">
+            <div class="flex mb-2">
+                <div class="w-10 text-blue-500 flex justify-center">
+                    <i class="fa-solid fa-user-plus text-lg"></i>
+                </div>
+                <div class="ml-2">
+                    <img src="https://pbs.twimg.com/profile_images/1683325380441128960/yRsRRjGO_400x400.jpg" alt="Profile" class="w-12 h-12 rounded-full">
+                </div>
+            </div>
+            <div class="ml-12">
+                <p><span class="font-bold hover:underline cursor-pointer">TechGuru</span> <i class="fa-solid fa-circle-check text-blue-500"></i> followed you</p>
+                <p class="text-gray-500 text-sm">2h</p>
+            </div>
+        </div>
+    <% } else if (req.query.filter === 'mentions') { %>
+        <!-- Mentions notifications -->
+        <div class="border-b border-gray-800 p-4 hover:bg-gray-900 transition-colors">
+            <div class="flex mb-2">
+                <div class="w-10 text-blue-500 flex justify-center">
+                    <i class="fa-solid fa-at text-lg"></i>
+                </div>
+                <div class="ml-2">
+                    <img src="https://pbs.twimg.com/profile_images/1683325380441128960/yRsRRjGO_400x400.jpg" alt="Profile" class="w-12 h-12 rounded-full">
+                </div>
+            </div>
+            <div class="ml-12">
+                <p><span class="font-bold hover:underline cursor-pointer">WebDeveloper</span> mentioned you</p>
+                <p class="text-gray-500 mt-1 p-3 border-l-4 border-gray-800">"Hey @username, what do you think about the new React 18 features?"</p>
+                <p class="text-gray-500 text-sm">3h</p>
+            </div>
+        </div>
+    <% } else { %>
+        <!-- Empty state -->
+        <div class="flex flex-col items-center justify-center p-8 text-center">
+            <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mb-4">
+                <i class="fa-regular fa-bell text-2xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold mb-2">Nothing to see here — yet</h2>
+            <p class="text-gray-500 max-w-sm">When there's new notifications, we'll let you know.</p>
+        </div>
+    <% } %>
+</div> 

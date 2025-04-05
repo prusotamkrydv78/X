@@ -1,0 +1,22 @@
+<div class="md:hidden fixed bottom-0 left-0 right-0 bg-black border-t border-gray-800 flex justify-around py-2 z-20 mobile-nav">
+    <a href="/" class="text-xl px-2 py-3 <%= activePage === 'home' ? 'text-blue-500' : '' %>">
+        <i class="fa-solid fa-house"></i>
+    </a>
+    <a href="/explore" class="text-xl px-2 py-3 <%= activePage === 'explore' ? 'text-blue-500' : '' %>">
+        <i class="fa-solid fa-magnifying-glass"></i>
+    </a>
+    <a href="/notifications" class="text-xl px-2 py-3 <%= activePage === 'notifications' ? 'text-blue-500' : '' %>">
+        <i class="fa-regular fa-bell"></i>
+    </a>
+    <a href="/messages" class="text-xl px-2 py-3 <%= activePage === 'messages' ? 'text-blue-500' : '' %>">
+        <i class="fa-regular fa-envelope"></i>
+    </a>
+    <a href="/profile" class="text-xl px-2 py-3 <%= activePage === 'profile' ? 'text-blue-500' : '' %>">
+        <i class="fa-regular fa-user"></i>
+    </a>
+</div>
+
+<!-- Mobile Compose Button -->
+<button id="compose-tweet-mobile" class="md:hidden fixed bottom-20 right-5 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-3 shadow-lg z-30">
+    <i class="fa-solid fa-feather"></i>
+</button> 

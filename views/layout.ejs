@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('partials/head') %>
+</head>
+<body class="bg-black text-white">
+    <div class="container mx-auto">
+        <div class="flex min-h-screen">
+            <!-- Left Sidebar -->
+            <div class="w-[275px] fixed h-screen border-r border-gray-800">
+                <%- include('partials/sidebar') %>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="ml-[275px] flex-1 min-h-screen border-r border-gray-800 max-w-[600px]">
+                <%- body %>
+            </div>
+            
+            <!-- Right Sidebar -->
+            <div class="flex-1 ml-[875px] fixed max-w-[350px] px-6 py-3 hidden lg:block">
+                <%- include('partials/rightbar') %>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="/js/main.js"></script>
+</body>
+</html> 

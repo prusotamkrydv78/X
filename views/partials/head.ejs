@@ -1,0 +1,57 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= title %></title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="icon" href="https://abs.twimg.com/responsive-web/client-web/icon-svg.168b89da.svg">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://cdn.tailwindcss.com">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="dns-prefetch" href="https://abs.twimg.com">
+<link rel="stylesheet" href="/css/styles.css">
+<style>
+    body {
+        background-color: #000;
+        color: #fff;
+    }
+    
+    /* Tweet actions hover effects */
+    .tweet-action:hover {
+        color: #1d9bf0;
+    }
+    .tweet-action.retweet:hover {
+        color: #00ba7c;
+    }
+    .tweet-action.like:hover {
+        color: #f91880;
+    }
+    
+    /* Scrollbar customization */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+        background: #000;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #333;
+        border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+    
+    /* Custom rounded borders for images */
+    .tweet-image {
+        border-radius: 16px;
+    }
+    
+    /* Tab container scrollbar hide */
+    .tab-container::-webkit-scrollbar {
+        display: none;
+    }
+    .tab-container {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style> 
